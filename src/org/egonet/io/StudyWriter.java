@@ -140,6 +140,7 @@ public class StudyWriter {
 		e.addElement("QuestionType").setInt(q.questionType.ordinal());
 		e.addElement("AnswerType").setInt(q.answerType.ordinal());
 		e.addElement("FollowUpOnly").setBoolean(q.followupOnly);
+		e.addElement("FollowUpPrefill").setBoolean(q.followupPrefill);
 
 		if ((q.title != null) && (!q.title.equals(""))) {
 			e.addElement("QuestionTitle").setText(q.title);

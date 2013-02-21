@@ -494,6 +494,14 @@ public class ClientQuestionPanel extends JPanel implements Observer {
 		if (question == null)
 			return; // danger will robinson!
 
+		// can only prefill if it's a followup, AND
+		// invert sense logic. prefill on question = true implies don't prefill
+		boolean followup = egoClient.getInterview().isFollowup();
+		boolean dontprefill = followup && question.followupPrefill;
+		
+		logger.info(question.getString());
+		logger.info("Don't prefill: " + dontprefill);
+
 
 		// we may need some string substitutions for $$1 and $$2
 		String[] alterNames = egoClient.getInterview().getAlterStrings(question);
@@ -561,7 +569,8 @@ public class ClientQuestionPanel extends JPanel implements Observer {
 			answerTextField.setDocument(plainDocument);
 			answerTextField.requestFocus();
 
-			if (question.getAnswer().isAnswered()) {
+			if (question.getAnswer().isAnswered() && !dontprefill) {
+				logger.info("Answered, Prefilling");
 				answerTextField.setText(question.getAnswer().string);
 			} else {
 				answerTextField.setText("");
@@ -580,7 +589,8 @@ public class ClientQuestionPanel extends JPanel implements Observer {
 			numericalTextField.setDocument(wholeNumberDocument);
 			numericalTextField.requestFocusInWindow();
 
-			if (question.getAnswer().isAnswered()) {
+			if (question.getAnswer().isAnswered() && !dontprefill) {
+				logger.info("Answered, Prefilling");
 				if (question.getAnswer().getValue() != -1) {
 					numericalTextField.setText(question.getAnswer().string);
 					noAnswerBox.setSelected(false);
@@ -629,7 +639,8 @@ public class ClientQuestionPanel extends JPanel implements Observer {
 				}
 				
 				logger.info("-- answer: " + question.getAnswer().isAnswered() + ", answer index: " + question.getAnswer().getIndex());
-				if (question.getAnswer().isAnswered() && (question.getAnswer().getIndex() >= -1)) {
+				if (!dontprefill && question.getAnswer().isAnswered() && (question.getAnswer().getIndex() >= -1)) {
+					logger.info("Answered, Prefilling");
 					logger.info(" -- was it actually answered with index >= -1 (not unselected)");
 					//int idx = question.selections.length - (question.answer.getValue() + 1);
 					if (answerButtons != null && answerButtons.length != 0) {
@@ -659,13 +670,14 @@ public class ClientQuestionPanel extends JPanel implements Observer {
 					// If question already answered, then select that answer
 					if(	i > 0 && 
 						question.getAnswer().getIndex() >= 0 &&
-						question.getAnswer().getIndex()+1 == i
+						question.getAnswer().getIndex()+1 == i &&
+						!dontprefill
 						)
 						answerMenu.setSelectedIndex(i);	
 				}
 				
 				// Question not answered yet, so should start on "Select an answer"
-				if(( ! question.getAnswer().isAnswered()) || question.getAnswer().getIndex() < 0) {
+				if(!question.getAnswer().isAnswered() || question.getAnswer().getIndex() < 0) {
 					answerMenu.setSelectedIndex(0);
 				}
 				
@@ -676,8 +688,6 @@ public class ClientQuestionPanel extends JPanel implements Observer {
 				answerPanel.setVisible(true);
 				answerMenu.requestFocusInWindow();
 			}
-			
-			
 			
 			
 		}
@@ -703,7 +713,7 @@ public class ClientQuestionPanel extends JPanel implements Observer {
 		
 		//logger.info("fillAnswer called for " + answer.getString());
 		Study study = egoClient.getStudy();
-
+		
 		if (question.questionType == Shared.QuestionType.ALTER_PROMPT) {
 			answer.string = "Egonet - University of Florida";
 			boolean morePrompts = !egoClient.getInterview().isLastAlterPrompt();
@@ -764,9 +774,9 @@ public class ClientQuestionPanel extends JPanel implements Observer {
 		} else {
 		    
 			if(question.answerType.equals(Shared.AnswerType.NUMERICAL)) {
-				if (noAnswerBox.isSelected()
-						|| (numericalTextField.getText().length() > 0)) {
+				if (noAnswerBox.isSelected() || (numericalTextField.getText().length() > 0)) {
 					answer.timestamp = generateTimeStamp();
+					
 					//logger.info("Timestamp: " + answer.timestamp);
 					if (noAnswerBox.isSelected()) {
 						answer.setAnswered(true);

@@ -32,6 +32,7 @@ public class Question implements Cloneable {
 
 	private boolean statable = false;
 	
+	// followupOnly
 	public boolean followupOnly = false;
 
 	public boolean isFollowupOnly() {
@@ -40,6 +41,17 @@ public class Question implements Cloneable {
 
 	public void setFollowupOnly(boolean followupOnly) {
 		this.followupOnly = followupOnly;
+	}
+
+	// followup prefill
+	public boolean followupPrefill = false;
+
+	public boolean isFollowupPrefill() {
+		return followupPrefill;
+	}
+
+	public void setFollowupPrefill(boolean followupPrefill) {
+		this.followupPrefill = followupPrefill;
 	}
 
 	public Long UniqueId = new Long(new Date().getTime());
@@ -144,6 +156,7 @@ public class Question implements Cloneable {
 			q = (Question) super.clone();
 			q.link = (QuestionLink) this.link.clone();
 			q.followupOnly = this.followupOnly;
+			q.followupPrefill = this.followupPrefill;
 
 			/*******************************************************************
 			 * Dangerous to clone answers as multiple answers refer to same

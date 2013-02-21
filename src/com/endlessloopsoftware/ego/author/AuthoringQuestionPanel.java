@@ -72,6 +72,9 @@ public class AuthoringQuestionPanel extends EgoQPanel
 
     private final JLabel question_followup_only_label = new JLabel("Follow up protocols only:");
     private final JCheckBox question_followup_only_combo = new JCheckBox();
+
+    private final JLabel question_followup_prefill_label = new JLabel("Don't prefill on follow up protocols:");
+    private final JCheckBox question_followup_prefill_combo = new JCheckBox();
     
     private final JTextArea question_question_field = new NoTabTextArea();
     private final JTextArea question_citation_field = new NoTabTextArea();
@@ -211,7 +214,12 @@ public class AuthoringQuestionPanel extends EgoQPanel
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         question_panel_right.add(question_followup_only_combo, new GridBagConstraints(1, 13, 1, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-        
+
+        question_panel_right.add(question_followup_prefill_label, new GridBagConstraints(0, 15, 1, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
+        question_panel_right.add(question_followup_prefill_combo, new GridBagConstraints(1, 15, 1, 1, 0.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+
         
         question_panel_right.add(question_link_label, new GridBagConstraints(0, 10, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
                 GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
@@ -344,6 +352,15 @@ public class AuthoringQuestionPanel extends EgoQPanel
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				question_followup_only_combo_actionPerformed(e);
+				
+			}
+        });
+        
+        question_followup_prefill_combo.addItemListener(new java.awt.event.ItemListener()
+        {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				question_followup_prefill_combo_actionPerformed(e);
 				
 			}
         });
@@ -542,6 +559,7 @@ public class AuthoringQuestionPanel extends EgoQPanel
                 question_title_field.setText(q.title);
                 question_follows_menu.setSelectedIndex(index);
                 question_followup_only_combo.setSelected(q.followupOnly);
+                question_followup_prefill_combo.setSelected(q.followupPrefill);
 
                 question_type_menu.setEnabled(true);
                 question_answer_type_menu.setEnabled(q.questionType != Shared.QuestionType.ALTER_PROMPT);
@@ -792,6 +810,7 @@ public class AuthoringQuestionPanel extends EgoQPanel
             q.setStatable(q_old.isStatable());
             q.text = q_old.text;
             q.followupOnly = q_old.followupOnly;
+            q.followupPrefill = q_old.followupPrefill;
 
             try
             {
@@ -934,6 +953,26 @@ public class AuthoringQuestionPanel extends EgoQPanel
             {
                 Question q = (Question) question_list.getSelectedValue();
                 q.setFollowupOnly(e.getStateChange() != ItemEvent.DESELECTED);
+                
+                egoNet.getStudy().setCompatible(false);
+                egoNet.getStudy().setModified(true);
+                fillPanel();
+            }
+            else
+            {
+                questionUpdate();
+            }
+        }
+    }
+    
+    void question_followup_prefill_combo_actionPerformed(ItemEvent e)
+    {
+        if (!inUpdate)
+        {
+            if (egoNet.getStudy().confirmIncompatibleChange(egoNet.getFrame()))
+            {
+                Question q = (Question) question_list.getSelectedValue();
+                q.setFollowupPrefill(e.getStateChange() != ItemEvent.DESELECTED);
                 
                 egoNet.getStudy().setCompatible(false);
                 egoNet.getStudy().setModified(true);

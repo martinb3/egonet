@@ -185,6 +185,12 @@ public class StudyReader {
 			boolean foo = question.getBoolean("FollowUpOnly");
 			q.followupOnly = foo;
 		}
+		
+		if(question.hasElement("FollowUpPrefill")) {
+			boolean foo = question.getBoolean("FollowUpPrefill");
+			q.followupPrefill = foo;
+		}
+
 
 		q.UniqueId = new Long(question.getLong("Id"));
 		q.questionType = QuestionType.values()[question.getInt("QuestionType")];
