@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.List;
 import java.text.*;
 
+import org.egonet.model2.Alter;
+
 public class Answer implements Cloneable {
     /**
      * Unique ID for every question
@@ -34,7 +36,7 @@ public class Answer implements Cloneable {
      * single alter for alter questions, or two alters for an alter pair
      * question.
      */
-    private List<Integer> alters;
+    private List<Alter> alters;
 
     private boolean _answered = false;
 
@@ -63,7 +65,7 @@ public class Answer implements Cloneable {
         this(Id, null);
     }
 
-    public Answer(Long Id, int[] alters) {
+    public Answer(Long Id, List<Alter> alters) {
         //logger.info("New answer object created with id="+Id+" and alters: " + Arrays.asList(alters));
         questionId = Id;
         setAnswered(false);
@@ -73,20 +75,19 @@ public class Answer implements Cloneable {
         timestamp = DateFormat.getDateInstance().format(new Date());
 
         if (alters == null) {
-            this.alters = new ArrayList<Integer>();
+            this.alters = new ArrayList<Alter>();
         } else {
-            this.alters = new ArrayList<Integer>(alters.length);
-            for(Integer a : alters)
-                this.alters.add(a);
+            this.alters = new ArrayList<Alter>(alters.size());
+            this.alters.addAll(alters);
         }
     }
     
-    public Integer firstAlter()
+    public Alter firstAlter()
     {
         return alters.get(0);
     }
     
-    public Integer secondAlter()
+    public Alter secondAlter()
     {
         return alters.get(1);
     }
@@ -132,7 +133,7 @@ public class Answer implements Cloneable {
         return index;
     }
 
-    public List<Integer> getAlters()
+    public List<Alter> getAlters()
     {
         return Collections.unmodifiableList(alters);
     }

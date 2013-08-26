@@ -20,14 +20,19 @@ package com.endlessloopsoftware.ego.client.statistics;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
 import org.egonet.exceptions.MissingPairException;
+import org.egonet.model2.Alter;
+import org.egonet.model2.AlterMatrix;
+import org.egonet.model2.AlterPair;
 import org.egonet.util.FileHelpers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,20 +52,20 @@ public class Statistics
     private final Study     _study;
     private final Interview _interview;
 
-    public int[][]          adjacencyMatrix         = new int[0][];
-    public int[][]          weightedAdjacencyMatrix = new int[0][];
-    public int[][]          proximityMatrix         = new int[0][];
-    public float[]          betweennessArray        = new float[0];
-    public float[]          closenessArray          = new float[0];
-    public int[]            farnessArray            = new int[0];
-    public int[]            degreeArray             = new int[0];
-    public Set<Stack<Integer>>       cliqueSet               = new HashSet<Stack<Integer>>();
-    public Set<Stack<Integer>>              allSet                  = new HashSet<Stack<Integer>>();
-    public Set<Set<Integer>>              componentSet            = new HashSet<Set<Integer>>();
-    public AlterStats[]     alterStatArray          = new AlterStats[0];
-    public Integer[][]      alterSummary            = new Integer[0][];
+    public AlterMatrix<Integer>          adjacencyMatrix         = new AlterMatrix<Integer>();
+    public AlterMatrix<Integer>          weightedAdjacencyMatrix = new AlterMatrix<Integer>();
+    public AlterMatrix<Integer>          proximityMatrix         = new AlterMatrix<Integer>();
+    public Map<Alter,Float>          betweennessArray        = new HashMap<Alter,Float>();
+    public Map<Alter,Float>          closenessArray          = new HashMap<Alter,Float>();
+    public Map<Alter,Integer>            farnessArray            = new HashMap<Alter,Integer>();
+    public Map<Alter,Integer>            degreeArray             = new HashMap<Alter,Integer>();
+    public Set<Stack<Alter>>       cliqueSet               = new HashSet<Stack<Alter>>();
+    public Set<Stack<Alter>>              allSet                  = new HashSet<Stack<Alter>>();
+    public Set<Set<Alter>>              componentSet            = new HashSet<Set<Alter>>();
+    public Map<Alter,AlterStats>     alterStatArray          = new HashMap<Alter,AlterStats>();
+    public Map<Alter,List<Integer>>      alterSummary            = new HashMap<Alter,List<Integer>>();
 
-    public String[]         alterList               = new String[0];
+    public List<Alter>         alterList               = new ArrayList<Alter>();
 
     public int              isolates;
     public int              dyads;
@@ -300,12 +305,11 @@ public class Statistics
         return stats;
     }
 
-    private void clearIdentity(int[][] matrix)
+    // If given a matrix, ensure adj(A,A)=0 for all A
+    private void clearIdentity(AlterMatrix<Integer> matrix)
     {
-        for (int i = 0; i < this.adjacencyMatrix.length; ++i)
-        {
-            matrix[i][i] = 0;
-        }
+    	for(Alter a : matrix.getAllAlters())
+    		matrix.set(a,a,0);
     }
 
     /********
@@ -314,47 +318,53 @@ public class Statistics
      * @param adjacencyMatrix representing non-directed graph of alters
      * @return Matrix of shortest path lengths
      */
-    private int[][] generateProximityMatrix()
-    {
-        int size = this.adjacencyMatrix.length;
-        int[][] outMatrix = new int[size][];
-        int s, i, j, k;
+    private AlterMatrix<Integer> generateProximityMatrix() {
+    	
+        // copy the entire matrix
+    	AlterMatrix<Integer> outMatrix = new AlterMatrix<Integer>(adjacencyMatrix);
+        
+        Set<Alter> alterSet1 = outMatrix.getAllAlters();
+        Set<Alter> alterSet2 = outMatrix.getAllAlters();
 
-        /* Clear */
-        for (i = 0; i < size; ++i)
-        {
-            outMatrix[i] = (int[]) this.adjacencyMatrix[i].clone();
-            outMatrix[i][i] = 0;
-        }
+        // not sure making sure for all A, adj(A,A)=0 is necessary, but do it
+        clearIdentity(outMatrix);
 
-        for (i = 0; i < size; ++i)
-        {
-            for (j = 0; j < size; ++j)
-            {
-                if (outMatrix[j][i] > 0)
-                {
-                    for (k = 0; k < size; ++k)
+        // use to compare a list of alters against previous pairs
+        Set<Alter> alterSet3 = outMatrix.getAllAlters();
+        
+        for(Alter i : alterSet1) {
+        	for(Alter j : alterSet2) {
+        		
+        		int v = outMatrix.get(i, j);
+        		if(v>0) {
+                	// loop through all possible alters
+                    for (Alter k : alterSet3)
                     {
-                        if (outMatrix[i][k] > 0)
+                    	// if adj(i,k) is also true / non-zero
+                        if (outMatrix.get(i,k) > 0)
                         {
-                            s = outMatrix[j][i] + outMatrix[i][k];
-                            if ((outMatrix[j][k] == 0) || (s < outMatrix[j][k]))
+                        	// add the values of adj(i,j) and adj(i,k)
+                            int s = outMatrix.get(j,i) + outMatrix.get(i,k);
+                            
+                            // if adj(j,k) is false/zero OR the sum of other ones less than adj(j,k)
+                            if ((outMatrix.get(j,k) == 0) || (s < outMatrix.get(j,k)))
                             {
-                                outMatrix[j][k] = s;
+                            	// set adj(j,k) to sum
+                                outMatrix.set(j,k,s);
                             }
                         }
                     }
-                }
-            }
+        			
+        		}
+        		
+        	}
         }
+        
+        
+        // Clear it again, not sure necessary again
+        clearIdentity(outMatrix);
 
-        /* Clear */
-        for (i = 0; i < size; ++i)
-        {
-            outMatrix[i][i] = 0;
-        }
-
-        return (outMatrix);
+        return outMatrix;
     }
 
     /********
@@ -364,17 +374,23 @@ public class Statistics
      * @param adjacencyMatrix representing non-directed graph of alters
      * @return array of C(D) for each alter
      */
-    private int[] generateDegreeArray()
-    {
-        int[] d = new int[this.adjacencyMatrix.length];
+    private Map<Alter,Integer> generateDegreeArray() {
+        Set<Alter> alterSet1 = adjacencyMatrix.getAllAlters();
+        Set<Alter> alterSet2 = adjacencyMatrix.getAllAlters();
+        
+    	Map<Alter,Integer> d = new HashMap<Alter,Integer>(alterSet1.size());
 
-        for (int i = 0; i < this.adjacencyMatrix.length; ++i)
-        {
-            for (int j = 0; j < this.adjacencyMatrix.length; ++j)
+    	
+        for (Alter i : alterSet1) {
+            for (Alter j : alterSet2)
             {
-                if (this.adjacencyMatrix[i][j] > 0)
-                {
-                    d[i]++;
+                if (adjacencyMatrix.get(i,j) > 0) {
+                	if(!d.containsKey(i))
+                		d.put(i,0);
+                	
+                	// increment
+                    int ct = d.get(i);
+                    d.put(i,ct+1);
                 }
             }
         }
@@ -389,7 +405,7 @@ public class Statistics
      * Based on an algorithm by Ulrik Brandes (2001)
      * @return array of C(B) for each alter
      */
-    private float[] generateBetweennessArray()
+    private Map<Alter,Float> generateBetweennessArray()
     {
         int size = this.adjacencyMatrix.length;
         float[] Cb = new float[size];
@@ -471,22 +487,28 @@ public class Statistics
      * Based on Bron Kerbosch [73]
      * @return Set of Sets. Each Set represents one clique
      */
-    private Set<Stack<Integer>> identifyCliques()
+    private Set<Stack<Alter>> identifyCliques()
     {
-        int[][] matrix     = (int[][]) adjacencyMatrix.clone();
-        int size           = matrix.length;
-        int[]  all         = new int[size];
-        Stack<Integer>  compsub     = new Stack<Integer>();
-        Set<Stack<Integer>>    cliqueSet   = new HashSet<Stack<Integer>>();
+        AlterMatrix<Integer> matrix     = new AlterMatrix<Integer>(adjacencyMatrix);
+        
+        Set<Alter> allAlters = matrix.getAllAlters();
+        int size           = allAlters.size();
+        Map<Alter,Integer>  all         = new HashMap<Alter,Integer>();
 
-        for (int c = 0; c < size; ++c)
-        {
-            all[c] = c;
+        // a list of every possible alter
+        Stack<Alter> compsub   = new Stack<Alter>();
+        compsub.addAll(matrix.getAllAlters());
+        
+        
+        Set<Stack<Alter>>    cliqueSet   = new HashSet<Stack<Alter>>();
+
+        int c = 0;
+        for(Alter a : allAlters) {
+        	all.put(a,c); c++;
         }
 
         // Set identity
-        for (int i = 0; i < size; ++i)
-            matrix[i][i] = 1;
+        clearIdentity(matrix);
 
         extendVersion2(matrix, compsub, cliqueSet, all, 0, size, 0);
 
@@ -498,22 +520,29 @@ public class Statistics
      * counts the number of all fully connected groups in the graph
      * * @return Set of Sets. Each Set represents one fully connected graph
      */
-    private Set<Stack<Integer>> identifyAllConnections()
+    private Set<Stack<Alter>> identifyAllConnections()
     {
-        int[][] matrix  = (int[][]) adjacencyMatrix.clone();
-        int size        = matrix.length;
-        int[] all       = new int[size];
-        Stack<Integer> compsub   = new Stack<Integer>();
-        Set<Stack<Integer>> allSet      = new HashSet<Stack<Integer>>();
+        AlterMatrix<Integer> matrix  = new AlterMatrix<Integer>(adjacencyMatrix);
+        
+        
+        Set<Alter> allAlters = matrix.getAllAlters();
+        int size           = allAlters.size();
+        Map<Alter,Integer>  all         = new HashMap<Alter,Integer>();
 
-        for (int c = 0; c < size; ++c)
-        {
-            all[c] = c;
+        int c = 0;
+        for(Alter a : allAlters) {
+        	all.put(a,c); c++;
         }
+        
+        // a list of every possible alter
+        Stack<Alter> compsub   = new Stack<Alter>();
+        compsub.addAll(matrix.getAllAlters());
+
+        // the return values?
+        Set<Stack<Alter>> allSet      = new HashSet<Stack<Alter>>();
 
         // Set identity
-        for (int i = 0; i < size; ++i)
-            matrix[i][i] = 1;
+        clearIdentity(matrix);
 
         extendVersion2(matrix, compsub, allSet, all, 0, size, 1);
 
@@ -537,9 +566,7 @@ public class Statistics
         return count;
     }
 
-    @SuppressWarnings("unchecked")
-    private void extendVersion2(int[][] pMatrix, Stack<Integer> compsub, Set<Stack<Integer>> cliqueSet, int[] old, int ne, int ce,
-            int cliqueOrAll)
+    private void extendVersion2(AlterMatrix pMatrix, Stack<Alter> compsub, Set<Stack<Alter>> cliqueSet, Map<Alter,Integer> old, int ne, int ce, int cliqueOrAll)
     {
         int[] newarray    = new int[ce];
         int   nod, fixp   = 0;
@@ -671,12 +698,8 @@ public class Statistics
         boolean      merged;
 
         /* clone stacks so this is non-destructive */
-
-        for (Iterator<Stack<Integer>> it = this.allSet.iterator(); it.hasNext();)
-        {
-            list.add(
-                    new HashSet<Integer>(it.next())
-            );
+        for (Iterator<Stack<Integer>> it = this.allSet.iterator(); it.hasNext();) {
+            list.add(new HashSet<Integer>(it.next()));
         }
 
         while (list.size() > 0)
@@ -720,7 +743,7 @@ public class Statistics
         Iterator<Long> qIt = qList.iterator();
         int index = 0;
 
-        alterSummary = new Integer[alterList.length][];
+        alterSummary = new HashMap<Alter,List<Integer>>(alterList.size());
 
         /* Count qList Questions which are categorical or numerical */
         while (qIt.hasNext())
@@ -731,7 +754,7 @@ public class Statistics
                 index++;
         }
 
-        alterStatArray = new AlterStats[index];
+        alterStatArray = new HashMap<Alter,AlterStats>(index);
         for (int i = 0; i < index; ++i)
         {
             alterStatArray[i] = new AlterStats();
@@ -842,48 +865,53 @@ public class Statistics
         // Write column names
     	List<String> columnNames = new ArrayList<String>();
     	columnNames.add(name);
-        for (int i = 0; i < alterList.length; ++i)
+        for (int i = 0; i < alterList.size(); ++i)
         {
-        	columnNames.add(FileHelpers.formatForCSV(alterList[i]));
+        	Alter a = alterList.get(i);
+        	columnNames.add(FileHelpers.formatForCSV(a.getName()));
         }
         w.writeNext(columnNames.toArray(new String[]{}));
 
         // Write other rows
-        for (int i = 0; i < alterList.length; ++i)
+        for (int i = 0; i < alterList.size(); ++i)
         {
+        	Alter a = alterList.get(i);
         	List<String> row = new ArrayList<String>();
-        	row.add(FileHelpers.formatForCSV(alterList[i]));
-            for (int j = 0; j < alterList.length; ++j)
+        	row.add(FileHelpers.formatForCSV(a.getName()));
+        	
+            for (int j = 0; j < alterList.size(); ++j)
             {
-                row.add(""+(weighted ? weightedAdjacencyMatrix[i][j] : adjacencyMatrix[i][j]));
+            	Alter b = alterList.get(j);
+                row.add(""+(weighted ? weightedAdjacencyMatrix.get(a,b) : adjacencyMatrix.get(a,b)));
             }
             w.writeNext(row.toArray(new String[]{}));
         }
     }
 
     /********
-     * Write alters answer summary to a printwriter
+     * Write alters answer summary to a print writer
      * @param w         PrintWriter
      */
     public void writeAlterArray(PrintWriter w)
     {
         // Write column names
         w.write("Alter_Name");
-        for (int i = 0; i < alterStatArray.length; ++i)
+        for (int i = 0; i < alterStatArray.size(); ++i)
         {
-            w.write(", " + FileHelpers.formatForCSV(alterStatArray[i].qTitle));
+        	AlterStats a = alterStatArray.get(i);
+            w.write(", " + FileHelpers.formatForCSV(a.qTitle));
         }
         w.println(", Degree, Closeness, Betweenness");
 
-        for (int i = 0; i < alterList.length; ++i)
-        {
-            w.print(FileHelpers.formatForCSV(alterList[i]));
-
-            for (int j = 0; j < alterSummary[0].length; ++j)
-            {
-                w.print(", " + alterSummary[i][j]);
+        for (Alter a : alterList) {
+            w.print(FileHelpers.formatForCSV(a.getName()));
+            List<Integer> summary = alterSummary.get(a);
+            
+            // all lists inside alterSummary *should* be the same length
+            for (int j = 0; j < summary.size(); ++j) { // ++j????
+                w.print(", " + summary.get(j));
             }
-            w.println(", " + degreeArray[i] + ", " + closenessArray[i] + ", " + betweennessArray[i]);
+            w.println(", " + degreeArray.get(a) + ", " + closenessArray.get(a) + ", " + betweennessArray.get(a));
         }
     }
 
@@ -934,7 +962,7 @@ public class Statistics
 
                     if (a.isAnswered())
                     {
-                        w.println(alterList[a.firstAlter()] + ": " + a.string);
+                        w.println(a.firstAlter() + ": " + a.string);
                     }
                 }
             }

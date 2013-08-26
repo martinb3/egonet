@@ -12,6 +12,7 @@ import net.sf.functionalj.Function2;
 import net.sf.functionalj.tuple.Pair;
 
 import org.egonet.exceptions.MissingPairException;
+import org.egonet.model2.Alter;
 import org.egonet.wholenet.graph.WholeNetworkTie.DiscrepancyStrategy;
 import org.egonet.wholenet.gui.NameMapperFrame.NameMapping;
 import org.slf4j.Logger;
@@ -112,7 +113,7 @@ public class WholeNetwork {
 		
 		for(Interview interview : interviews) {
 			
-			String [] thisInterviewAlterlist = interview.getAlterList();
+			Set<Alter> thisInterviewAlterlist = interview.getAlterList();
 			
 			// tie the ego to all alters
 			Pair<WholeNetworkAlter,NameMapping> ego = findAlter(interview, -1);
@@ -173,9 +174,14 @@ public class WholeNetwork {
 
 		logger.info("# Alters: " + wholeNetworkAlters.size() + ", # Ties: " + wholeNetworkTies.size());
 	}
-	
+	/**
+	 * Examine all known alters in the whole network, and tries to identify if that alter maps to the given interview and alter number.
+	 * @param interview
+	 * @param alterNumber
+	 * @return a whole network alter with all mappings of 
+	 */
+	// Remake this with new classes.
 	private Pair<WholeNetworkAlter,NameMapping> findAlter(Interview interview, Integer alterNumber) {
-		
 		for(WholeNetworkAlter alter : wholeNetworkAlters.values()) {
 			for(NameMapping mapping : alter.getOccurences()) {
 				if(mapping.getInterview().equals(interview) && mapping.getAlterNumber().equals(alterNumber))
