@@ -2,11 +2,13 @@ package org.egonet.wholenet.graph;
 
 import java.util.*;
 
+import org.egonet.model2.Alter;
 import org.egonet.wholenet.gui.NameMapperFrame.NameMapping;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Maps;
 
+// public class WholeNetworkAlter extends Alter implements Comparable<WholeNetworkAlter> {
 public class WholeNetworkAlter implements Comparable<WholeNetworkAlter> {
 
 	private final Integer id;

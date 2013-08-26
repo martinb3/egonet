@@ -84,11 +84,12 @@ public class NameMapperFrame extends JFrame {
 	}
 
 	/**
-	 * This class is a data member which will keep track of exactly what should
-	 * mapping happen for every alter in every interview. It may point to
+	 * This class is a data member which will keep track of exactly what mapping
+	 * should happen for every alter in every interview. It may point to
 	 * another alter that should be treated as the same thing, or it may be set
 	 * to never map to anything.
 	 */
+	// move to its own class
 	public class NameMapping implements Comparable<NameMapping> {
 		final Study study;
 		final Interview interview;

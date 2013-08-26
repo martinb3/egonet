@@ -19,6 +19,8 @@
 package com.endlessloopsoftware.ego.client.graph;
 
 import org.apache.commons.collections15.Transformer;
+import org.egonet.model2.Alter;
+import org.egonet.model2.AlterMatrix;
 import org.egonet.util.listbuilder.Selection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +39,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.awt.geom.Point2D;
+
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.*;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+
 import javax.imageio.ImageIO;
 
 public class GraphData {
@@ -54,7 +58,7 @@ public class GraphData {
 
 	private EgoClient egoClient;
 	
-	public int[][] adjacencyMatrix;
+	public AlterMatrix adjacencyMatrix;
 
 	/**
 	 * List to contain list of all alter Questions in interview
@@ -67,14 +71,14 @@ public class GraphData {
 	private List<Question> interviewAlterPairQuestionList;
 
 	
-
+	
 	public GraphData(EgoClient egoClient) {
 		this.egoClient=egoClient;
 		
 		interview = egoClient.getInterview();
 		
-		int x = interview.getAlterList().length;
-		adjacencyMatrix = new int[x][x];
+		int x = interview.getAlterList().size();
+		adjacencyMatrix = new AlterMatrix();
 		
 		
 		completeAlterNameList = egoClient.getInterview().getStats().alterList;
@@ -91,8 +95,7 @@ public class GraphData {
 	 */
 	public List<Pair<Integer>> getAlterPairs(GraphQuestionSelectionPair graphQuestion) {
 		List<Pair<Integer>> alterPairList = new ArrayList<Pair<Integer>>();
-		List<Integer> alterNumbers = new ArrayList<Integer>();
-		alterNumbers = getAlterNumbers(graphQuestion);
+		List<Integer> alterNumbers = getAlterNumbers(graphQuestion);
 		for (int i = 0; i < alterNumbers.size(); i = i + 2) {
 			Pair<Integer> alterPair = new Pair<Integer>(alterNumbers.get(i), alterNumbers.get(i + 1));
 			alterPairList.add(alterPair);
@@ -157,7 +160,10 @@ public class GraphData {
 
 			if (interviewQuestion.UniqueId == QID) {
 				if (interviewQuestion.getAnswer().getValue() == graphQuestion.getSelection().getValue()) {
-				    alterNumbers.addAll(interviewQuestion.getAnswer().getAlters());
+					List<Alter> alters = interviewQuestion.getAnswer().getAlters();
+					for(int i = 0; i < alters.size(); i++)
+						alterNumbers.add(i);
+				    
 				}
 			}
 		}
@@ -180,7 +186,9 @@ public class GraphData {
 			}
 			if (interviewQuestion.UniqueId == QID) {
 				if (interviewQuestion.getAnswer().getValue() == selection.getValue()) {
-				    alterNumbers.addAll(interviewQuestion.getAnswer().getAlters());
+					List<Alter> alters = interviewQuestion.getAnswer().getAlters();
+					for(int i = 0; i < alters.size(); i++)
+						alterNumbers.add(i);
 				}
 			}
 		}
@@ -221,9 +229,10 @@ public class GraphData {
 			if (interviewQuestion.UniqueId == QID) {
 			    if (interviewQuestion.getAnswer().getValue() == graphQuestion.getSelection().getValue()) {
 					
-					for (int alterNum : interviewQuestion.getAnswer().getAlters()) {
-						alterNames.add(completeAlterNameList[alterNum]);
-					}
+					List<Alter> alters = interviewQuestion.getAnswer().getAlters();
+					for(int i = 0; i < alters.size(); i++)
+						alterNames.add(alters.get(i).getName());
+			    	
 				}
 			}
 		}
@@ -231,36 +240,35 @@ public class GraphData {
 		return alterNames;
 	}
 
-	public void generateAdjacencyMatrix(Question question,
-			Selection selection, boolean weighted) {
+	public void generateAdjacencyMatrix(Question question, Selection selection, boolean weighted) {
+		
 		Study study = egoClient.getInterview().getStudy();
 		if (study.getUIType().equals(Shared.TRADITIONAL_QUESTIONS)) {
-			for (Iterator it = egoClient.getInterview().getAnswerSubset(
-					question.UniqueId).iterator(); it.hasNext();) {
+			for (Iterator it = egoClient.getInterview().getAnswerSubset(question.UniqueId).iterator(); it.hasNext();) {
 				Answer a = (Answer) it.next();
+				
+				List<Alter> alterList = a.getAlters();
+				Alter alter1 = a.firstAlter(); int idx1 = alterList.indexOf(alter1);
+				Alter alter2 = a.secondAlter(); int idx2 = alterList.indexOf(alter2);
+				
+				int matrixvalue;
+				
 				if (weighted) {
-					if ((adjacencyMatrix[a.firstAlter()][a.secondAlter()] == 0)
-							&& (adjacencyMatrix[a.secondAlter()][a.firstAlter()] == 0)
-							&& (a.getValue() == selection.getValue())) {
-						adjacencyMatrix[a.firstAlter()][a.secondAlter()] = (a.adjacent) ? selection
-								.getValue()
-								: 0;
-						adjacencyMatrix[a.secondAlter()][a.firstAlter()] = (a.adjacent) ? selection
-								.getValue()
-								: 0;
-						//logger.info("Updating weighted adjacency matrix");
-					}
-				} else {
-					if ((adjacencyMatrix[a.firstAlter()][a.secondAlter()] == 0)
-							&& (adjacencyMatrix[a.secondAlter()][a.firstAlter()] == 0)
-							&& (a.getValue() == selection.getValue())) {
-						adjacencyMatrix[a.firstAlter()][a.secondAlter()] = (a.adjacent) ? 1
-								: 0;
-						adjacencyMatrix[a.secondAlter()][a.firstAlter()] = (a.adjacent) ? 1
-								: 0;
-						logger.info("Updating weighted adjacency matrix");
-					}
-
+					matrixvalue = selection.getValue();
+				}
+				else {
+					matrixvalue = 1;
+				}
+				
+				// this only fixes broken values where it == 0
+				if ((adjacencyMatrix.get(a.firstAlter(),a.secondAlter()) == 0)
+						&& (adjacencyMatrix.get(a.secondAlter(),a.firstAlter()) == 0)
+						&& (a.getValue() == selection.getValue())) {
+					
+					adjacencyMatrix.set(a.firstAlter(),a.secondAlter(), (a.adjacent) ? matrixvalue : 0);
+					adjacencyMatrix.set(a.secondAlter(),a.firstAlter(), (a.adjacent) ? matrixvalue : 0);
+					
+					logger.info("Updating weighted and unweighted adjacency matrix");
 				}
 			}
 		}
@@ -396,11 +404,11 @@ public class GraphData {
 		return interviewAlterQuestionList;
 	}
 
-	public int[][] getAdjacencyMatrix() {
+	public AlterMatrix getAdjacencyMatrix() {
 		return adjacencyMatrix;
 	}
 
-	public void setAdjacencyMatrix(int[][] adj) {
+	public void setAdjacencyMatrix(AlterMatrix adj) {
 		adjacencyMatrix = adj;
 	}
 

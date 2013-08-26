@@ -27,9 +27,12 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.DefaultListModel;
+
 import org.egonet.exceptions.CorruptedInterviewException;
 import org.egonet.exceptions.MissingPairException;
 import org.egonet.gui.EgoStore;
+import org.egonet.model2.Alter;
+import org.egonet.model2.AlterMatrix;
 import org.egonet.util.ELSMath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +49,7 @@ public class Interview implements Comparable<Interview> {
 
 	private final Study _study;
 
-	private int[][] _matrix;
+	private AlterMatrix  _matrix;
 
 	private Statistics _stats = null;
 
@@ -54,7 +57,7 @@ public class Interview implements Comparable<Interview> {
 	
 	private boolean _complete;
 
-	private String[] _alterList = new String[0]; // so alter pair is at least stateable
+	private Set<Alter> _alterList = new HashSet<Alter>(0); // so alter pair is at least stateable
 
 	private int _qIndex = 0;
 
@@ -129,7 +132,7 @@ public class Interview implements Comparable<Interview> {
 	 */
 	public void reinitializeAlterData() throws CorruptedInterviewException {
 		/* Calculate some interview values */
-		int _numAlters = _alterList.length;
+		int _numAlters = _alterList.size();
 		_numAlterPairs = ELSMath.summation(_numAlters - 1);
 		set_numAnswers(_study.getQuestionOrder(Shared.QuestionType.EGO).size()
 				+ _study.getQuestionOrder(Shared.QuestionType.ALTER_PROMPT)
@@ -188,7 +191,10 @@ public class Interview implements Comparable<Interview> {
 		/* Alter Questions */
 		for (j = 0; j < _numAlters; j++) {
 			questions = _study.getQuestionOrder(Shared.QuestionType.ALTER).iterator();
-			int[] alter = { j };
+			
+			ArrayList<Alter> alter = new ArrayList<Alter>();
+			alter.put(j);
+			
 			while (questions.hasNext()) {
 				Long questionId = (Long) questions.next();
 				Question question = _study.getQuestions().getQuestion(questionId);
@@ -292,7 +298,7 @@ public class Interview implements Comparable<Interview> {
 	 * 
 	 * @return s String Array of alters
 	 */
-	public String[] getAlterList() {
+	public Set<Alter> getAlterList() {
 		return _alterList;
 	}
 
@@ -303,7 +309,7 @@ public class Interview implements Comparable<Interview> {
 	 *            String Array of alters
 	 * @throws CorruptedInterviewException 
 	 */
-	public void setAlterList(String[] s) throws CorruptedInterviewException {
+	public void setAlterList(Set<Alter> s) throws CorruptedInterviewException {
 		_alterList = s;
 		reinitializeAlterData();
 	}
@@ -609,20 +615,22 @@ public class Interview implements Comparable<Interview> {
 		return (b);
 	}
 
-	/****
+	/**
+	 * This method appears to get the alters associated with a question, by looking up 
+	 * if each answer first has at least one alter, and a second string if the answer will have two alters. 
 	 */
 	public String[] getAlterStrings(Question q) {
 		String[] s = new String[2];
 
 		try {
 			if ((q.getAnswer().hasAtLeastOneAlter())
-					&& (q.getAnswer().firstAlter() != -1)) {
-				s[0] = _alterList[q.getAnswer().firstAlter()];
+					&& (q.getAnswer().firstAlter() != null)) {
+				s[0] = q.getAnswer().firstAlter().toString();
 			}
 
 			if ((q.getAnswer().hasTwoAlters())
-					&& (q.getAnswer().secondAlter() != -1)) {
-				s[1] = _alterList[q.getAnswer().secondAlter()];
+					&& (q.getAnswer().secondAlter() != null)) {
+				s[1] = q.getAnswer().secondAlter().toString();
 			}
 		} catch (Exception ex) {
 			s[0] = "";
@@ -657,14 +665,14 @@ public class Interview implements Comparable<Interview> {
 		return list;
 	}
 
-	private String completeText(String s, List<Integer> alters) {
+	/*private String completeText(String s, List<Integer> alters) {
 	    int [] aa = new int[alters.size()];
 	    int i = 0;
 	    for(Integer alt : alters)
 	        aa[i++] = alt;
 	    
 	    return completeText(s, aa);
-	}
+	}*/
 	
 	/***************************************************************************
 	 * Replaces alter name placeholders with alter names
@@ -675,33 +683,37 @@ public class Interview implements Comparable<Interview> {
 	 *            names of alters to put in placeholders
 	 * @return modified string
 	 */
-	private String completeText(String s, int[] alters) {
+	private String completeText(String s, List<Alter> alters) {
 		int parsePtr;
 		String oldS = s;
 
+		// _alterList[alters[0]] this may be an issue. Why we referenced _alterList to get alters for an answer that contains the alters already is beyond me....
+		
 		try {
-			for (parsePtr = s.indexOf("$$1"); (parsePtr != -1); parsePtr = s
-					.indexOf("$$1")) {
-				s = s.substring(0, parsePtr) + _alterList[alters[0]]
-						+ s.substring(parsePtr + 3);
+			for (parsePtr = s.indexOf("$$1"); (parsePtr != -1); parsePtr = s.indexOf("$$1")) {
+				Alter alter1 = alters.get(0);
+				String alter1str = (alter1==null ? "" : alter1.getName());
+				
+				s = s.substring(0, parsePtr) + alter1str + s.substring(parsePtr + 3);
 			}
 
-			for (parsePtr = s.indexOf("$$2"); (parsePtr != -1); parsePtr = s
-					.indexOf("$$2")) {
-				s = s.substring(0, parsePtr) + _alterList[alters[1]]
-						+ s.substring(parsePtr + 3);
+			for (parsePtr = s.indexOf("$$2"); (parsePtr != -1); parsePtr = s.indexOf("$$2")) {
+				Alter alter2 = alters.get(1);
+				String alter2str = (alter2==null ? "" : alter2.getName());
+				
+				s = s.substring(0, parsePtr) + alter2str + s.substring(parsePtr + 3);
 			}
 
-			for (parsePtr = s.indexOf("$$-1"); (parsePtr != -1); parsePtr = s
-					.indexOf("$$-1")) {
-				s = s.substring(0, parsePtr) + _alterList[alters[0] - 1]
-						+ s.substring(parsePtr + 4);
-			}
+			// this one's ugly, since it can't really work if alter order doesn't matter.
+			/*for (parsePtr = s.indexOf("$$-1"); (parsePtr != -1); parsePtr = s.indexOf("$$-1")) {
+				s = s.substring(0, parsePtr) + _alterList[alters[0] - 1] + s.substring(parsePtr + 4);
+			}*/
 
-			for (parsePtr = s.indexOf("$$"); (parsePtr != -1); parsePtr = s
-					.indexOf("$$")) {
-				s = s.substring(0, parsePtr) + _alterList[alters[0]]
-						+ s.substring(parsePtr + 2);
+			for (parsePtr = s.indexOf("$$"); (parsePtr != -1); parsePtr = s.indexOf("$$")) {
+				Alter alter1 = alters.get(0);
+				String alter1str = (alter1==null ? "" : alter1.getName());
+				
+				s = s.substring(0, parsePtr) + alter1str + s.substring(parsePtr + 2);
 			}
 		} catch (Exception ex) {
 			s = oldS;
@@ -790,7 +802,7 @@ public class Interview implements Comparable<Interview> {
 	 * @return _numAlters
 	 */
 	public int getNumberAlters() {
-		return _alterList.length;
+		return _alterList.size();
 	}
 
 	/***************************************************************************
@@ -834,13 +846,13 @@ public class Interview implements Comparable<Interview> {
 	 * @return Matrix representing non-directed graph of alters
 	 * @throws MissingPairException
 	 */
-	public int[][] generateAdjacencyMatrix(Question q, boolean weighted) throws MissingPairException {
+	public AlterMatrix<Integer> generateAdjacencyMatrix(Question q, boolean weighted) throws MissingPairException {
 	    
 	    //logger.info("Adjacency matrix ("+(weighted ? "" : "non-")+"weighted) : ");
-		int _numAlters = _alterList.length;
+		int _numAlters = _alterList.size();
 	    
 		if (_study.getUIType().equals(Shared.TRADITIONAL_QUESTIONS)) {
-			int[][] m = new int[_numAlters][_numAlters];
+			AlterMatrix<Integer> m = new AlterMatrix<Integer>();
 
 			/*
 			 * init to make sure we get all pairs, in the case of linked
@@ -868,22 +880,12 @@ public class Interview implements Comparable<Interview> {
 				int value = weighted ? weightedValue : nonweightedValue;
 				//logger.info("Working on answer (adj="+a.adjacent+",v="+value+",nw="+nonweightedValue+",w="+weightedValue+") for adj: " + a.getString());
 				
-				m[a.firstAlter()][a.secondAlter()] = value;
-				m[a.secondAlter()][a.firstAlter()] = value;
+				m.set(a.firstAlter(), a.secondAlter(), value);
 			}
 
 			_matrix = m;
 		}
 
-		for(int x = 0; x < _matrix.length; x++)
-		{
-		    for(int y = 0; y < _matrix[x].length; y++)
-		    {
-		        //System.out.print(_matrix[x][y] + "\t");
-		    }
-		    //logger.info();
-		}
-		
 		return (_matrix);
 	}
 
@@ -944,7 +946,7 @@ public class Interview implements Comparable<Interview> {
 		sb.append("_numAnswers: " + _numAnswers + "\n");
 		sb.append("notes: " + notes + "\n");
 		sb.append("_study: " + _study + "\n");
-		sb.append("_alterList: " + Arrays.toString(_alterList) + "\n");
+		sb.append("_alterList: " + Arrays.toString(_alterList.toArray()) + "\n");
 		
 		for(int i = 0; i < _answers.length; i++) {
 			Answer a = _answers[i];
