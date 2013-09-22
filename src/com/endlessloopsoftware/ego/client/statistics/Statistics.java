@@ -62,7 +62,7 @@ public class Statistics
     public Set<Stack<Alter>>       cliqueSet               = new HashSet<Stack<Alter>>();
     public Set<Stack<Alter>>              allSet                  = new HashSet<Stack<Alter>>();
     public Set<Set<Alter>>              componentSet            = new HashSet<Set<Alter>>();
-    public Map<Alter,AlterStats>     alterStatArray          = new HashMap<Alter,AlterStats>();
+    public List<AlterStats>     alterStatArray          = new ArrayList<AlterStats>();
     public Map<Alter,List<Integer>>      alterSummary            = new HashMap<Alter,List<Integer>>();
 
     public List<Alter>         alterList               = new ArrayList<Alter>();
@@ -413,16 +413,16 @@ public class Statistics
 
         for (s = 0; s < size; ++s)
         {
-            Stack<Integer> S = new Stack<Integer>();
+            Stack<Alter> S = new Stack<Alter>();
             @SuppressWarnings({"unchecked"})
-            java.util.List<Integer>[] P = new java.util.List[size];
-            LinkedList<Integer> Q = new LinkedList<Integer>();
+            java.util.List<Alter>[] P = new java.util.List[size];
+            LinkedList<Alter> Q = new LinkedList<Alter>();
             int[] spaths = new int[size];
             int[] distance = new int[size];
 
             for (int w = 0; w < size; ++w)
             {
-                P[w] = new LinkedList<Integer>();
+                P[w] = new LinkedList<Alter>();
                 distance[w] = -1;
             }
 
@@ -690,28 +690,28 @@ public class Statistics
      * @param cliqueSet Set of stacks returned by identifyCliques
      * @return Set of Sets. Each Set represents one component
      */
-    private Set<Set<Integer>> identifyComponents()
+    private Set<Set<Alter>> identifyComponents()
     {
-        Set<Set<Integer>>          s     = new HashSet<Set<Integer>>();
-        LinkedList<Set<Integer>>   list  = new LinkedList<Set<Integer>>();
+        Set<Set<Alter>>          s     = new HashSet<Set<Alter>>();
+        LinkedList<Set<Alter>>   list  = new LinkedList<Set<Alter>>();
 
         boolean      merged;
 
         /* clone stacks so this is non-destructive */
-        for (Iterator<Stack<Integer>> it = this.allSet.iterator(); it.hasNext();) {
-            list.add(new HashSet<Integer>(it.next()));
+        for (Iterator<Stack<Alter>> it = this.allSet.iterator(); it.hasNext();) {
+            list.add(new HashSet<Alter>(it.next()));
         }
 
         while (list.size() > 0)
         {
             merged = false;
-            Iterator<Set<Integer>> it = list.iterator();
-            Set<Integer> component = it.next();
+            Iterator<Set<Alter>> it = list.iterator();
+            Set<Alter> component = it.next();
 
             while (it.hasNext())
             {
-                Set<Integer> intersection = new HashSet<Integer>(component);
-                Set<Integer> compareClique = it.next();
+                Set<Alter> intersection = new HashSet<Alter>(component);
+                Set<Alter> compareClique = it.next();
 
                 intersection.retainAll(compareClique);
 
@@ -754,15 +754,15 @@ public class Statistics
                 index++;
         }
 
-        alterStatArray = new HashMap<Alter,AlterStats>(index);
+        alterStatArray = new ArrayList<AlterStats>(index);
         for (int i = 0; i < index; ++i)
         {
-            alterStatArray[i] = new AlterStats();
+            alterStatArray.add(i, new AlterStats());
         }
 
-        for (int i = 0; i < alterList.length; ++i)
+        for (int i = 0; i < alterList.size(); ++i)
         {
-            alterSummary[i] = new Integer[index];
+            alterSummary.put(alterList.get(i), new ArrayList<Integer>(index)); 
         }
 
         index = 0;
@@ -777,53 +777,54 @@ public class Statistics
                 Set<Answer> answerSet = _interview.getAnswerSubset(qId);
                 Iterator<Answer> aIt = answerSet.iterator();
 
-                alterStatArray[index].questionId = qId;
-                alterStatArray[index].qTitle = q.title;
-                alterStatArray[index].answerType = q.answerType;
+                AlterStats asa = alterStatArray.get(index);
+                asa.questionId = qId;
+                asa.qTitle = q.title;
+                asa.answerType = q.answerType;
 
                 if (q.answerType == Shared.AnswerType.NUMERICAL)
                 {
-                    alterStatArray[index].answerText = new String[] { "Mean" };
-                    alterStatArray[index].answerTotals = new int[1];
+                    asa.answerText = new String[] { "Mean" };
+                    asa.answerTotals = new int[1];
                 }
                 else if (q.answerType == Shared.AnswerType.CATEGORICAL)
                 {
-                    alterStatArray[index].answerTotals = new int[q.getSelections().length];
-                    alterStatArray[index].answerText = new String[q.getSelections().length];
+                    asa.answerTotals = new int[q.getSelections().length];
+                    asa.answerText = new String[q.getSelections().length];
 
                     for (int i = 0; i < q.getSelections().length; ++i)
                     {
                         //	alterStatArray[index].answerText[i] = q.selections[q.selections.length - (i + 1)].getString();
-                        alterStatArray[index].answerText[i] = q.getSelections()[i].getString();
+                        asa.answerText[i] = q.getSelections()[i].getString();
                     }
                 }
 
-                while (aIt.hasNext())
-                {
+                while (aIt.hasNext()) {
                     try {
                         Answer a = (Answer) aIt.next();
 
+                        List<Integer> arr = alterSummary.get(a.firstAlter());
                         if (a.isAnswered())
                         {
-                            alterSummary[a.firstAlter()][index] = new Integer(a.getValue());
+                            arr.add(index, new Integer(a.getValue()));
 
                             if (q.answerType == Shared.AnswerType.NUMERICAL)
                             {
                                 if (a.getValue() != -1)
                                 {
-                                    alterStatArray[index].answerTotals[0] += a.getValue();
-                                    alterStatArray[index].answerCount++;
+                                	asa.answerTotals[0] += a.getValue();
+                                	asa.answerCount++;
                                 }
                             }
                             else if (q.answerType == Shared.AnswerType.CATEGORICAL)
                             {
-                                alterStatArray[index].answerTotals[a.getIndex()] += 1;
-                                alterStatArray[index].answerCount++;
+                            	asa.answerTotals[a.getIndex()] += 1;
+                            	asa.answerCount++;
                             }
                         }
                         else
                         {
-                            alterSummary[a.firstAlter()][index] = new Integer(-1);
+                            arr.add(index, new Integer(-1));
                         }
 
                     } catch (Exception ex) {
