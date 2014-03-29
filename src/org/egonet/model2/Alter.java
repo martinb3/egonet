@@ -9,7 +9,7 @@ public class Alter implements Comparable<Alter> {
 	 * Using UUID instead of a String allows us to rename alters without losing
 	 * alter data. It also gives us a nice way to check equality and compare
 	 * values without worry about comparing Strings. This leads to a
-	 * counter-intuitive sort order, but we'll provide a compartor for that.
+	 * counter-intuitive sort order, but we'll provide a comparator for that.
 	 */
 	private String name;
 	private final UUID _id;
