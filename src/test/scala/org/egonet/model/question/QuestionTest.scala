@@ -1,6 +1,6 @@
 package org.egonet.model.question
 
-
+import scala.collection.JavaConverters._
 import org.scalatest.Args
 import org.egonet.EgonetSpec
 import org.egonet.exceptions.MalformedQuestionException
@@ -57,12 +57,12 @@ class QuestionTest extends EgonetSpec {
     	    sAdjacent, // determinesAdjacency=true
     	    new Selection()
     	    )
-    	q.setSelections(selections.toArray)
+    	q.setSelections(selections.asJava)
     	
     	val rSelections = q.getSelections()
     	val zipped = selections.toArray.zipWithIndex
     	zipped.foreach({case (x,i) => {
-    	  assert(x == rSelections(i))
+    	  assert(x == rSelections.get(i))
     	}})
     	
     	assert(q.determinesAdjacency())

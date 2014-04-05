@@ -3,7 +3,7 @@ package org.egonet.model.alter;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AlterPair {
+public class AlterPair implements Comparable<AlterPair> {
 	private Alter first, second;
 	
 	public AlterPair(Alter first, Alter second) {
@@ -62,5 +62,17 @@ public class AlterPair {
 		r.add(first); r.add(second);
 		
 		return r;
+	}
+
+	@Override
+	public int compareTo(AlterPair o) {
+		if(o.equals(this))
+			return 0;
+		
+		int r = hashCode()- (o.hashCode());
+		if(r == 0)
+			throw new RuntimeException("very unlikely UUID collusion");
+		
+		return  r;
 	}
 }

@@ -81,4 +81,8 @@ public class Alter implements Comparable<Alter> {
 	public String getName() {
 		return name;
 	}
+	
+	public UUID getId() {
+		return _id;
+	}
 }
