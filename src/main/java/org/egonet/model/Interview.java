@@ -24,13 +24,17 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.DefaultListModel;
 
 import org.egonet.exceptions.CorruptedInterviewException;
+import org.egonet.exceptions.EgonetException;
 import org.egonet.exceptions.MissingPairException;
 import org.egonet.gui.EgoStore;
+import org.egonet.model.alter.Alter;
+import org.egonet.model.alter.AlterMatrix;
 import org.egonet.model.answer.*;
 import org.egonet.model.question.AlterPairQuestion;
 import org.egonet.model.question.AlterPromptQuestion;
@@ -54,7 +58,7 @@ public class Interview implements Comparable<Interview> {
 
 	private final Study _study;
 
-	private int[][] _matrix;
+	private AlterMatrix _matrix;
 
 	private Statistics _stats = null;
 
@@ -62,10 +66,10 @@ public class Interview implements Comparable<Interview> {
 	
 	private boolean _complete;
 
-	private String[] _alterList = new String[0]; // so alter pair is at least stateable
+	private List<Alter> _alterList = new ArrayList<Alter>(0); // so alter pair is at least stateable
                 
-        /* This matrix will contain the alters of every question prompt. */        
-        private String[][] _alterQuestionPromptList;
+    // list of questions, for each one, list of alters        
+    private Map<Integer,List<Alter>> _alterQuestionPromptList;
         
 	private int _qIndex = 0;
 
@@ -111,9 +115,9 @@ public class Interview implements Comparable<Interview> {
 		this.sIntName = sIntName;
 		_study = study;
 
-                //Initializes the
-                _alterQuestionPromptList = new String[_study.getQuestionOrder(AlterPromptQuestion.class).size()][0];
-		//_alterList = new String[]{null};
+		List<Long> alterPrompts = _study.getQuestionOrder(AlterPromptQuestion.class);
+		int numAlterPrompts = alterPrompts.size();
+        _alterQuestionPromptList = new HashMap<Integer,List<Alter>>(numAlterPrompts);
 		
 		reinitializeAlterData();
 	}
@@ -140,18 +144,18 @@ public class Interview implements Comparable<Interview> {
 	 * data on the fly.
 	 * @throws CorruptedInterviewException 
 	 */
+	@Deprecated // shouldn't have to do anything but delete data!
 	public void reinitializeAlterData() throws CorruptedInterviewException {
 
                 /* Calculate some interview values */
-		int _numAlters = _alterList.length;
+		int _numAlters = _alterList.size();
 		_numAlterPairs = ELSMath.summation(_numAlters - 1);
-		set_numAnswers(_study.getQuestionOrder(EgoQuestion.class).size()
-				+ _study.getQuestionOrder(AlterPromptQuestion.class)
-						.size()
-				+ (_numAlters * _study.getQuestionOrder(
-						AlterQuestion.class).size())
-				+ (_numAlterPairs * _study.getQuestionOrder(
-						AlterPairQuestion.class).size()));
+		
+		set_numAnswers(
+				_study.getQuestionOrder(EgoQuestion.class).size()
+				+ _study.getQuestionOrder(AlterPromptQuestion.class).size()
+				+ (_numAlters * _study.getQuestionOrder(AlterQuestion.class).size())
+				+ (_numAlterPairs * _study.getQuestionOrder(AlterPairQuestion.class).size()));
 		
           
 		// we need to preserve old data, so hold on to any interesting questions (avoid null _answers)
@@ -326,8 +330,8 @@ public class Interview implements Comparable<Interview> {
 	 *            String Array of alters
 	 * @throws CorruptedInterviewException 
 	 */
-	public void setAlterList(String[] s) throws CorruptedInterviewException {
-		_alterList = s;
+	public void setAlterList(List<Alter> alters) throws CorruptedInterviewException {
+		_alterList = new ArrayList<Alter>(alters);
 		reinitializeAlterData();
 	}
         
@@ -634,18 +638,19 @@ public class Interview implements Comparable<Interview> {
 
 	/****
 	 */
+	@Deprecated // there should be no need to get String[] of alter names
 	public String[] getAlterStrings(Question q) {
 		String[] s = new String[2];
 
 		try {
 			if ((q.getAnswer().hasAtLeastOneAlter())
-					&& (q.getAnswer().firstAlter() != -1)) {
-				s[0] = _alterList[q.getAnswer().firstAlter()];
+					&& (q.getAnswer().firstAlter() != null)) {
+				s[0] = q.getAnswer().firstAlter().getName();
 			}
 
 			if ((q.getAnswer().hasTwoAlters())
-					&& (q.getAnswer().secondAlter() != -1)) {
-				s[1] = _alterList[q.getAnswer().secondAlter()];
+					&& (q.getAnswer().secondAlter() != null)) {
+				s[1] = q.getAnswer().secondAlter().getName();
 			}
 		} catch (Exception ex) {
 			s[0] = "";
@@ -680,15 +685,6 @@ public class Interview implements Comparable<Interview> {
 		return list;
 	}
 
-	private String completeText(String s, List<Integer> alters) {
-	    int [] aa = new int[alters.size()];
-	    int i = 0;
-	    for(Integer alt : alters)
-	        aa[i++] = alt;
-	    
-	    return completeText(s, aa);
-	}
-	
 	/***************************************************************************
 	 * Replaces alter name placeholders with alter names
 	 * 
@@ -698,32 +694,32 @@ public class Interview implements Comparable<Interview> {
 	 *            names of alters to put in placeholders
 	 * @return modified string
 	 */
-	private String completeText(String s, int[] alters) {
+	private String completeText(String s, List<Alter> alters) {
 		int parsePtr;
 		String oldS = s;
 
 		try {
 			for (parsePtr = s.indexOf("$$1"); (parsePtr != -1); parsePtr = s
 					.indexOf("$$1")) {
-				s = s.substring(0, parsePtr) + _alterList[alters[0]]
+				s = s.substring(0, parsePtr) + alters.get(0)
 						+ s.substring(parsePtr + 3);
 			}
 
 			for (parsePtr = s.indexOf("$$2"); (parsePtr != -1); parsePtr = s
 					.indexOf("$$2")) {
-				s = s.substring(0, parsePtr) + _alterList[alters[1]]
+				s = s.substring(0, parsePtr) + alters.get(1)
 						+ s.substring(parsePtr + 3);
 			}
 
 			for (parsePtr = s.indexOf("$$-1"); (parsePtr != -1); parsePtr = s
 					.indexOf("$$-1")) {
-				s = s.substring(0, parsePtr) + _alterList[alters[0] - 1]
+				s = s.substring(0, parsePtr) + alters.get(_alterList.size()-1)
 						+ s.substring(parsePtr + 4);
 			}
 
 			for (parsePtr = s.indexOf("$$"); (parsePtr != -1); parsePtr = s
 					.indexOf("$$")) {
-				s = s.substring(0, parsePtr) + _alterList[alters[0]]
+				s = s.substring(0, parsePtr) + alters.get(0)
 						+ s.substring(parsePtr + 2);
 			}
 		} catch (Exception ex) {
@@ -813,7 +809,7 @@ public class Interview implements Comparable<Interview> {
 	 * @return _numAlters
 	 */
 	public int getNumberAlters() {
-		return _alterList.length;
+		return _alterList.size();
 	}
 
 	/***************************************************************************
@@ -857,54 +853,33 @@ public class Interview implements Comparable<Interview> {
 	 * @return Matrix representing non-directed graph of alters
 	 * @throws MissingPairException
 	 */
-	public int[][] generateAdjacencyMatrix(Question q, boolean weighted) throws MissingPairException {
-	    
-	    //logger.info("Adjacency matrix ("+(weighted ? "" : "non-")+"weighted) : ");
-		int _numAlters = _alterList.length;
-	    
-		if (_study.getUIType().equals(Shared.TRADITIONAL_QUESTIONS)) {
-			int[][] m = new int[_numAlters][_numAlters];
-
-			/*
-			 * init to make sure we get all pairs, in the case of linked
-			 * questions not all will be answered
-			 */
-
-			for (int i = 0; i < _numAlters; i++) {
-				for (int j = 0; j < _numAlters; j++) {
-					m[i][j] = 0;
-				}
-
-				m[i][i] = 1;
-			}
-
-			for (Iterator<Answer> it = getAnswerSubset(q.UniqueId).iterator(); it.hasNext();) 
-			{
-				Answer a = it.next();
-				
-				// in a weighted one, print all values
-				int weightedValue = a.getValue();
-				
-				// in unweighted, just print 0 or 1, ignore answer value
-				int nonweightedValue = a.adjacent ? 1 : 0;
-
-				int value = weighted ? weightedValue : nonweightedValue;
-				//logger.info("Working on answer (adj="+a.adjacent+",v="+value+",nw="+nonweightedValue+",w="+weightedValue+") for adj: " + a.getString());
-				
-				m[a.firstAlter()][a.secondAlter()] = value;
-				m[a.secondAlter()][a.firstAlter()] = value;
-			}
-
-			_matrix = m;
+	public AlterMatrix generateAdjacencyMatrix(Question q, boolean weighted) throws MissingPairException {
+		if (!_study.getUIType().equals(Shared.TRADITIONAL_QUESTIONS)) {
+			throw new EgonetException("non-traditional question study, no adj. matrix");
 		}
 
-		for(int x = 0; x < _matrix.length; x++)
-		{
-		    for(int y = 0; y < _matrix[x].length; y++)
-		    {
-		        //System.out.print(_matrix[x][y] + "\t");
-		    }
-		    //logger.info();
+		AlterMatrix m = new AlterMatrix(_alterList.size());
+		m.buildIdentity(_alterList); // ensure all pairs exist
+
+		for (Iterator<Answer> it = getAnswerSubset(q.UniqueId).iterator(); it.hasNext();) {
+			Answer a = it.next();
+			
+			// in a weighted one, print all values
+			int weightedValue = a.getValue();
+			
+			// in unweighted, just print 0 or 1, ignore answer value
+			int nonweightedValue = a.adjacent ? 1 : 0;
+
+			int value = weighted ? weightedValue : nonweightedValue;
+			//logger.info("Working on answer (adj="+a.adjacent+",v="+value+",nw="+nonweightedValue+",w="+weightedValue+") for adj: " + a.getString());
+			
+			m.set(a.firstAlter(),a.secondAlter(), value);
+		}
+
+		_matrix = m;
+
+		if(logger.isTraceEnabled()) {
+			logger.info(_matrix.toString());
 		}
 		
 		return (_matrix);
@@ -953,16 +928,16 @@ public class Interview implements Comparable<Interview> {
         
         
         /*Returns a matrix with all the alters of every alter question prompt.*/
-        public String[][] getAlterQuestionPromptAnswers(){
+        public Map<Integer,List<Alter>> getAlterQuestionPromptAnswers(){
             return _alterQuestionPromptList; 
         }
         
-        public void setAlterQuestionPromptAnswers(String[] s, int questionIndex){
-            _alterQuestionPromptList[questionIndex] = s;
+        @Deprecated
+        public void setAlterQuestionPromptAnswers(List<Alter> s, int questionIndex){
+            _alterQuestionPromptList.put(questionIndex, s);
         }
         
-        public void setAlterQuestionPromptAnswers(String[][] list)
-        {
+        public void setAlterQuestionPromptAnswers(Map<Integer,List<Alter>> list) {
             _alterQuestionPromptList = list;
         }
         
@@ -1001,7 +976,7 @@ public class Interview implements Comparable<Interview> {
 		sb.append("_numAnswers: " + _numAnswers + "\n");
 		sb.append("notes: " + notes + "\n");
 		sb.append("_study: " + _study + "\n");
-		sb.append("_alterList: " + Arrays.toString(_alterList) + "\n");
+		sb.append("_alterList: " + _alterList + "\n");
 		
 		for(int i = 0; i < _answers.length; i++) {
 			Answer a = _answers[i];
@@ -1017,83 +992,65 @@ public class Interview implements Comparable<Interview> {
          * Returns an array containing the union of the alters of all alter question prompt.
          * Alters will appear just once in this array. 
          */
-        public String[] getUnifiedAlterList()
-        {
+        public List<Alter> getUnifiedAlterList() {
             
-            ArrayList <String> tempList = new ArrayList <String>();
+            ArrayList <Alter> tempList = new ArrayList <Alter>();
             
-            for (int i = 0; i < _alterQuestionPromptList.length; i++)
-            {
-                for ( int j = 0; j < _alterQuestionPromptList[i].length; j++)
-                {
-                    if(!tempList.contains(_alterQuestionPromptList[i][j]))
-                    { 
-                        tempList.add(_alterQuestionPromptList[i][j]);
+            for (int i = 0; i < _alterQuestionPromptList.size(); i++) {
+                for ( int j = 0; j < _alterQuestionPromptList.get(i).size(); j++) {
+                    if(!tempList.contains(_alterQuestionPromptList.get(i).get(j))) { 
+                        tempList.add(_alterQuestionPromptList.get(i).get(j));
                     }
                 }
             }
-            String[] unifiedList = new String[tempList.size()];
-            unifiedList = tempList.toArray(unifiedList);
             
-            return unifiedList;
+            return tempList;
         }
         
         /*
          * Passed an array of strings, returns an array containing the union of 
          * the alters in the given array, and the global alter list.
          */
-        public String[] getUnifiedAlterList(String[] s)
-        {
+        public List<Alter> getUnifiedAlterList(List<Alter> s) {
             
-            ArrayList <String> tempList = new ArrayList <String>();
-            List <String> knownAlters = Arrays.asList(_alterList);
+            ArrayList <Alter> tempList = new ArrayList <Alter>();
+            List <Alter> knownAlters = new ArrayList<Alter>(_alterList);
             tempList.addAll(knownAlters);
             
-            for (int i = 0; i < s.length; i++)
-            {
-                if(!knownAlters.contains(s[i]))
-                {
-                    tempList.add(s[i]);
+            for (int i = 0; i < s.size(); i++) {
+                if(!knownAlters.contains(s.get(i))) {
+                    tempList.add(s.get(i));
                 }
             }
-            String[] unknownAlterList = new String[tempList.size()];
-            unknownAlterList = tempList.toArray(unknownAlterList);
+            List<Alter> unknownAlterList = new ArrayList<Alter>(tempList.size());
+            unknownAlterList.addAll(tempList);
             
             return unknownAlterList;
         }
         
         //Remove an alter or a collection of alters from the globl alter list.
-        public void removeAlters(ArrayList <String> list)
-        {
-            ArrayList <String> alterList = new ArrayList<String>(Arrays.asList(_alterList));
+        public void removeAlters(ArrayList<Alter> list) {
+            ArrayList <Alter> alterList = new ArrayList<Alter>(_alterList);
             alterList.removeAll(list);
-            String[] newAlterList = new String[alterList.size()];
-            newAlterList = alterList.toArray(newAlterList);
-            setAlterList(newAlterList);
+            setAlterList(alterList);
         }
         
         //Returns a hashmap containing for every alter, how many times appears.
-        public HashMap <String, Integer> getAlterHashmap()
-        {
-            HashMap<String, Integer> alterCounter = new HashMap <String, Integer>();
-            ArrayList <String> alterList = new ArrayList<String>(Arrays.asList(_alterList));
+        public HashMap <Alter, Integer> getAlterHashmap() {
+            HashMap<Alter, Integer> alterCounter = new HashMap <Alter, Integer>();
+            ArrayList <Alter> alterList = new ArrayList<Alter>(_alterList);
 
-            for(int i = 0; i < _alterQuestionPromptList.length; i++)
-            {
-                for(int j = 0; j <_alterQuestionPromptList[i].length; j++)
-                {
-                    if(alterList.contains(_alterQuestionPromptList[i][j]))
-                    {
-                        int counter;
+            for(int i = 0; i < _alterQuestionPromptList.size(); i++) {
+                for(int j = 0; j <_alterQuestionPromptList.get(i).size(); j++) {
+                    if(alterList.contains(_alterQuestionPromptList.get(i).get(j))) {
+                        int count = 0;
                          
-                        if(alterCounter.get(_alterQuestionPromptList[i][j]) == null)
-                        {
-                            counter = 1;
-                        }else
-                        {
-                            counter = alterCounter.get(_alterQuestionPromptList[i][j])+1;
-                        }
-                        alterCounter.put(_alterQuestionPromptList[i][j], counter);
+                        Alter a = _alterQuestionPromptList.get(i).get(j);
+                        
+                        Integer incrBy = alterCounter.get(a);
+                        count += (incrBy == null ? 1 : incrBy);
+                        
+                        alterCounter.put(a, count);
                     }
                 }
             }
@@ -1104,27 +1061,35 @@ public class Interview implements Comparable<Interview> {
         
         //Generates a matrix containing the relation/appearence between every alter prompt question
         //and all the alters.
-        public int[][] generateAlterByAlterPromptMatrix()
-        {
+        public Map<Alter,List<Integer>> generateAlterByAlterPromptMatrix() {
             
             int numPrompts = _study.getQuestionOrder(AlterPromptQuestion.class).size();
-            int matrix [][] = new int[_alterList.length][numPrompts];
+            
+            Map<Alter,List<Integer>> matrix = new HashMap<Alter,List<Integer>>(_alterList.size());
              
-             for (int i = 0; i < _alterList.length; i++) {
+             for (int i = 0; i < _alterList.size(); i++) {
                
-                for (int j = 0; j < numPrompts; j++){
+                for (int j = 0; j < numPrompts; j++) {
                        
-                      if (Arrays.asList(_alterQuestionPromptList[j]).contains(_alterList[i]) ){
-                          
-                          matrix[i][j] = 1;   
-                          
-                      } else
-                      {
-                          matrix[i][j] = 0; 
-                      }
+                	Alter a = _alterList.get(i);
+                	List<Alter> list = _alterQuestionPromptList.get(j);
+                	
+                	// initialize empty lists about this alter
+					if(!matrix.containsKey(a)) {
+						matrix.put(a, new ArrayList<Integer>());
+					}
+
+					if (list != null && a != null && list.contains(a)) {
+                          List<Integer> fetch = matrix.get(a);
+                    	  fetch.add(j, 1);
+					} 
+                    else if(list != null) {
+                      List<Integer> fetch = matrix.get(a);
+                  	  fetch.add(j, 0);
+                    }
                 }
             }
-             return matrix;
+            return matrix;
         }
         
 }

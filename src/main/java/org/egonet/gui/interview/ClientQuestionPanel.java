@@ -836,25 +836,24 @@ public class ClientQuestionPanel extends JPanel implements Observer {
                         }
 
 			AlterSamplingModel alterSampleModel = study.getAlterSamplingModel();
-			if(alterSampleModel.equals(Shared.AlterSamplingModel.ALL))
-			{
+			if(alterSampleModel.equals(Shared.AlterSamplingModel.ALL)) {
 				
-                                answer.setValue(alterLists.get(currentQuestionPrompt).getListStrings().length);
+                answer.setValue(alterLists.get(currentQuestionPrompt).getListStrings().length);
 				// TODO smithmb: In all three cases below, make some determination about 'follow up only' and 
 				// then note the added alters when setting the new list
 
-                                //Only modifies alter lists if we are doing the interview.
-                                if(egoClient.getUiPath() == ClientFrame.DO_INTERVIEW )
-                                {
-                                    //The new global alter list is the current global alter list, plus the unknown alters of this current
-                                    //question prompt.
-                                    String [] newAlterList = interview.getUnifiedAlterList(alterLists.get(currentQuestionPrompt).getListStrings());
-                                    interview.setAlterList(newAlterList);
-                                    
-                                    //Sets the alter list for the current question prompt.
-                                    interview.setAlterQuestionPromptAnswers(alterLists.get(currentQuestionPrompt).getListStrings(), currentQuestionPrompt);                
-                                    
-                                }
+                //Only modifies alter lists if we are doing the interview.
+                if(egoClient.getUiPath() == ClientFrame.DO_INTERVIEW )
+                {
+                    //The new global alter list is the current global alter list, plus the unknown alters of this current
+                    //question prompt.
+                    String [] newAlterList = interview.getUnifiedAlterList(alterLists.get(currentQuestionPrompt).getListStrings());
+                    interview.setAlterList(newAlterList);
+                    
+                    //Sets the alter list for the current question prompt.
+                    interview.setAlterQuestionPromptAnswers(alterLists.get(currentQuestionPrompt).getListStrings(), currentQuestionPrompt);                
+                    
+                }
                                 
 			} else if(alterSampleModel.equals(Shared.AlterSamplingModel.NTH_ALTER))
 			{

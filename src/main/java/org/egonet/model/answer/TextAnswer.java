@@ -1,5 +1,9 @@
 package org.egonet.model.answer;
 
+import java.util.List;
+
+import org.egonet.model.alter.Alter;
+
 public class TextAnswer extends Answer {
 
 	public TextAnswer() {
@@ -10,7 +14,7 @@ public class TextAnswer extends Answer {
 		super(qId);
 	}
 	
-	public TextAnswer(Long qId, int[] qAlters) {
+	public TextAnswer(Long qId, List<Alter> qAlters) {
 		super(qId, qAlters);
 	}
 

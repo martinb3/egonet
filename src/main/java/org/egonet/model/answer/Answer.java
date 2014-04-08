@@ -25,6 +25,7 @@ import java.util.Random;
 import java.text.*;
 
 import org.egonet.exceptions.MalformedQuestionException;
+import org.egonet.model.alter.Alter;
 
 public abstract class Answer implements Cloneable {
     /**
@@ -45,15 +46,15 @@ public abstract class Answer implements Cloneable {
      * single alter for alter questions, or two alters for an alter pair
      * question.
      */
-    private List<Integer> alters;
+    private List<Alter> alters;
 
-    public void setAlters(List<Integer> alters) {
+    public void setAlters(List<Alter> alters) {
 		this.alters = alters;
 	}
     
-    public void setAlters(int [] alters) {
-		this.alters = new ArrayList<Integer>();
-		for(int i : alters) this.alters.add(i);
+    public void setAlters(Alter [] alters) {
+		this.alters = new ArrayList<Alter>();
+		for(Alter i : alters) this.alters.add(i);
 	}
 
 	private boolean _answered = false;
@@ -89,7 +90,7 @@ public abstract class Answer implements Cloneable {
         this(Id, null);
     }
 
-    public Answer(Long Id, int[] alters) {
+    public Answer(Long Id, List<Alter> alters) {
         //logger.info("New answer object created with id="+Id+" and alters: " + Arrays.asList(alters));
         questionId = Id;
         setAnswered(false);
@@ -99,20 +100,20 @@ public abstract class Answer implements Cloneable {
         timestamp = DateFormat.getDateInstance().format(new Date());
 
         if (alters == null) {
-            this.alters = new ArrayList<Integer>();
+            this.alters = new ArrayList<Alter>();
         } else {
-            this.alters = new ArrayList<Integer>(alters.length);
-            for(Integer a : alters)
+            this.alters = new ArrayList<Alter>(alters.size());
+            for(Alter a : alters)
                 this.alters.add(a);
         }
     }
     
-    public Integer firstAlter()
+    public Alter firstAlter()
     {
         return alters.get(0);
     }
     
-    public Integer secondAlter()
+    public Alter secondAlter()
     {
         return alters.get(1);
     }
@@ -158,7 +159,7 @@ public abstract class Answer implements Cloneable {
         return index;
     }
 
-    public List<Integer> getAlters() {
+    public List<Alter> getAlters() {
         return Collections.unmodifiableList(alters);
     }
     
