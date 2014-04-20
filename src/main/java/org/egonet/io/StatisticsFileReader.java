@@ -28,12 +28,24 @@ public class StatisticsFileReader {
 		
 		StatRecord sr = new StatRecord();
 
-		Element nameElem = e.getElement("EgoName");
-		if (nameElem != null)
-		{
-			sr.setName(new Name(nameElem.getString("First"),nameElem.getString("Last")).toString());
+		String egoName = "unknown";
+ 		Element nameElem = e.getElement("EgoName");
+		if (nameElem != null) {
+			String test1 = new Name(nameElem.getString("First"), nameElem.getString("Last")).toString();
+			String test2 = nameElem.getString();
+			if(test1 != null && !test1.trim().equals("")) {
+				egoName = test1;
+			}
+			else if(test2 != null && !test2.trim().equals("")) {
+				egoName = test2;
+			}
+			
 		}
+		sr.setName(egoName);
 
+		if(sr.getName() == null || sr.getName().trim().equals(""))
+			throw new RuntimeException("Found null named stat record in " + statisticsFile.getName());
+ 
 		sr.degreeName     = e.getString("DegreeName");
 		sr.degreeValue    = new Integer(e.getInt("DegreeValue"));
 		sr.degreeMean     = new Float(e.getFloat("DegreeMean"));

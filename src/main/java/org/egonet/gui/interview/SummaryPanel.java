@@ -129,6 +129,10 @@ public class SummaryPanel extends JPanel
 		File intPath = new File(egoClient.getStorage().getStudyFile().getParent(), "/Interviews/");
 		File istPath = new File(egoClient.getStorage().getStudyFile().getParent(), "/Statistics/");
 		String[] intFiles = intPath.list();
+		
+		if(intFiles == null || intFiles.length <= 0)
+			throw new RuntimeException("No interview files found to process");
+		
 		Set<File> istFileSet = new HashSet<File>();
 		int i = 0, p = 0;
 
