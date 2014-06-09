@@ -131,12 +131,8 @@ public class WholeNetwork {
 				Question q = study.getQuestion((Long) questions.next());
 				if(q.determinesAdjacency()) {
 					try {
-						int [][] adj = interview.generateAdjacencyMatrix(q, false);
-						//int [][] adjWeight = interview.generateAdjacencyMatrix(q, true);
+						int [][] adj = interview.generateAdjacencyMatrix(q, false).asMatrix();
 						
-						// loop through adj
-						// if adj[i][j] == 1, thisInterviewAlters[i] && thisInterviewAlters[j] are adjacent in final matrix
-		
 						int alters = Math.min(adj.length,thisInterviewAlterlist.length);
 						for(int i = 0; i < alters; i++) {
 							for(int j = i+1; j < alters; j++) {

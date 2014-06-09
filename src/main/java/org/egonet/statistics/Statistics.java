@@ -128,8 +128,8 @@ public class Statistics
             }
             else
             {
-                stats.adjacencyMatrix            = interview.generateAdjacencyMatrix(q, false);
-                stats.weightedAdjacencyMatrix    = interview.generateAdjacencyMatrix(q, true);
+                stats.adjacencyMatrix            = interview.generateAdjacencyMatrix(q, false).asMatrix();
+                stats.weightedAdjacencyMatrix    = interview.generateAdjacencyMatrix(q, true).asMatrix();
                 stats.alter_alterPromptMatrix    = interview.generateAlterByAlterPromptMatrix();
                 stats.alterList                  = interview.getAlterList();
                 stats.allSet                     = new HashSet<Stack<Integer>>(0);

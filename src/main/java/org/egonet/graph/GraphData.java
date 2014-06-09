@@ -234,12 +234,12 @@ public class GraphData {
 		return alterNames;
 	}
 
-	public void generateAdjacencyMatrix(Question question,
-			Selection selection, boolean weighted) {
+	public void generateAdjacencyMatrix(Question question, Selection selection, boolean weighted) {
 		Study study = egoClient.getInterview().getStudy();
 		if (study.getUIType().equals(Shared.TRADITIONAL_QUESTIONS)) {
-			for (Iterator it = egoClient.getInterview().getAnswerSubset(
-					question.UniqueId).iterator(); it.hasNext();) {
+			
+			for (Iterator it = egoClient.getInterview().getAnswerSubset(question.UniqueId).iterator(); it.hasNext();) {
+				
 				Answer a = (Answer) it.next();
 				if (weighted) {
 					if ((adjacencyMatrix[a.firstAlter()][a.secondAlter()] == 0)

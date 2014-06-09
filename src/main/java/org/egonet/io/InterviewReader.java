@@ -2,11 +2,13 @@ package org.egonet.io;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 import org.egonet.exceptions.CorruptedInterviewException;
 import org.egonet.exceptions.StudyIdMismatchException;
 import org.egonet.model.Interview;
 import org.egonet.model.Study;
+import org.egonet.model.alter.Alter;
 import org.egonet.model.answer.*;
 import org.egonet.model.question.AlterPromptQuestion;
 import org.egonet.model.question.Question;
@@ -98,13 +100,13 @@ public class InterviewReader {
                         
                         /* Get a list with no alter repetitions (repetitions 
                            come from the apperance of alters in diferent questions)*/
-                        String[] alterList = interview.getUnifiedAlterList();
+                        List<Alter> alterList = interview.getUnifiedAlterList();
                         interview.setAlterList(alterList);
                         
 			/* Read answers */
-			if((alterList.length < study.getMinimumNumberOfAlters() || alterList.length > study.getMaximumNumberOfAlters())
+			if((alterList.size() < study.getMinimumNumberOfAlters() || alterList.size() > study.getMaximumNumberOfAlters())
                             && !study.isUnlimitedAlterMode())
-				logger.warn("Study expected between " + study.getMinimumNumberOfAlters() + " and " +study.getMaximumNumberOfAlters() + " but interview file had " + alterList.length + " alters");
+				logger.warn("Study expected between " + study.getMinimumNumberOfAlters() + " and " +study.getMaximumNumberOfAlters() + " but interview file had " + alterList.size() + " alters");
 			
 			interview.setComplete(e.getBoolean("Complete"));
 			try {

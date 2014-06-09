@@ -21,7 +21,7 @@ package org.egonet.model.question;
 /**
  * Possible categorical answers to a question. These are attached to questions,
  * and don't represent actual answers, only the list of possible answers. They
- * may also represent alters(?)
+ * may also represent alters by name.
  * 
  * @author martin_smith
  * 

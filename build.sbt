@@ -4,6 +4,10 @@ import sbtassembly.Plugin._
 
 name := "egonet"
 
+ScoverageSbtPlugin.instrumentSettings
+
+CoverallsPlugin.coverallsSettings
+
 libraryDependencies += "net.sf.jung" % "jung-api" % "2.0.1"
 
 libraryDependencies += "net.sf.jung" % "jung-graph-impl" % "2.0.1"
@@ -59,7 +63,6 @@ mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>
     case x => old(x)
   }
 }
-
 
 assemblySettings
 

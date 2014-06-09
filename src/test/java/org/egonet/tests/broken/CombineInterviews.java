@@ -90,7 +90,7 @@ public class CombineInterviews
 			Iterator<Long> questions = study.getQuestionOrder(AlterPairQuestion.class).iterator();
 			while (questions.hasNext()) {
 				Question q = study.getQuestion((Long) questions.next());
-				adj = interview.generateAdjacencyMatrix(q, false);
+				adj = interview.generateAdjacencyMatrix(q, false).asMatrix();
 
 				// loop through adj
 				// if adj[i][j] == 1, thisInterviewAlters[i] && thisInterviewAlters[j] are adjacent in final matrix

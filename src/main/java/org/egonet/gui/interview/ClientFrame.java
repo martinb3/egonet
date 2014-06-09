@@ -18,6 +18,7 @@
  */
 package org.egonet.gui.interview;
 
+
 import javax.swing.JCheckBoxMenuItem;
 
 import java.awt.AWTEvent;
@@ -409,7 +410,7 @@ public class ClientFrame extends MDIChildFrame implements InternalFrameListener 
 				Iterator<Long> questions = study.getQuestionOrder(AlterPairQuestion.class).iterator();
 				while (questions.hasNext()) {
 					Question q = study.getQuestion((Long) questions.next());
-					int[][] adj = interview.generateAdjacencyMatrix(q, true);
+					int[][] adj = interview.generateAdjacencyMatrix(q, true).asMatrix();
 
 					// loop through adj
 					// if adj[i][j] == 1, thisInterviewAlters[i] && thisInterviewAlters[j] are adjacent in final matrix

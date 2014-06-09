@@ -22,6 +22,7 @@ import org.egonet.model.Interview;
 import org.egonet.model.Shared;
 import org.egonet.model.Study;
 import org.egonet.model.Shared.AlterSamplingModel;
+import org.egonet.model.alter.Alter;
 import org.egonet.model.answer.*;
 import org.egonet.model.question.*;
 
@@ -63,6 +64,7 @@ import org.slf4j.LoggerFactory;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+
 
 
 
@@ -157,7 +159,7 @@ public class ClientQuestionPanel extends JPanel implements Observer {
 
 	private final ListBuilder alterList = new ListBuilder();
 
-        private final ArrayList <ListBuilder> alterLists = new ArrayList<ListBuilder>();
+    private final ArrayList <ListBuilder> alterLists = new ArrayList<ListBuilder>();
         
 	private final JCheckBox noAnswerBox = new JCheckBox("Don't Know");
 
@@ -638,7 +640,7 @@ public class ClientQuestionPanel extends JPanel implements Observer {
 			alterLists.get(currentQuestionPrompt).setPresetListsActive(false);
 			alterLists.get(currentQuestionPrompt).setNameModel(egoClient.getStudy().getAlterNameModel());
 			alterLists.get(currentQuestionPrompt).setTitle("Your Acquaintances");
-                        alterLists.get(currentQuestionPrompt).setKnownAlters(egoClient.getInterview().getAlterHashmap());
+			alterLists.get(currentQuestionPrompt).setKnownAlters(egoClient.getInterview().getAlterHashmap());
 			
                         // set alter Strings IF they exist yet
 			alterLists.get(currentQuestionPrompt).setListStrings(egoClient.getInterview().getAlterQuestionPromptAnswers()[currentQuestionPrompt]);
@@ -847,7 +849,7 @@ public class ClientQuestionPanel extends JPanel implements Observer {
                 {
                     //The new global alter list is the current global alter list, plus the unknown alters of this current
                     //question prompt.
-                    String [] newAlterList = interview.getUnifiedAlterList(alterLists.get(currentQuestionPrompt).getListStrings());
+                    List<Alter> newAlterList = interview.getUnifiedAlterList(alterLists.get(currentQuestionPrompt).getListStrings());
                     interview.setAlterList(newAlterList);
                     
                     //Sets the alter list for the current question prompt.
@@ -1256,8 +1258,7 @@ public class ClientQuestionPanel extends JPanel implements Observer {
 	private void setDefaultAnswer() {
 		if (!question.getAnswer().isAnswered()
 				&& (question.answerType.equals(CategoricalAnswer.class))
-				&& (question.getAnswer().secondAlter() > (question.getAnswer()
-						.firstAlter() + 1))) {
+				&& (question.getAnswer().secondAlter() > (question.getAnswer().firstAlter() + 1))) {
 			int defaultAnswer = -1;
 			if (!question.getSelections().get(question.getSelections().size() - 1).isAdjacent()) {
 				defaultAnswer = question.getSelections().size() - 1;
