@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import net.sf.functionalj.Function2;
 import net.sf.functionalj.tuple.Pair;
@@ -16,6 +17,7 @@ import org.egonet.graph.wholenet.WholeNetworkTie.DiscrepancyStrategy;
 import org.egonet.gui.wholenet.NameMapperFrame.NameMapping;
 import org.egonet.model.Interview;
 import org.egonet.model.Study;
+import org.egonet.model.alter.Alter;
 import org.egonet.model.question.AlterPairQuestion;
 import org.egonet.model.question.Question;
 import org.slf4j.Logger;
@@ -39,14 +41,14 @@ public class WholeNetwork {
 	final private List<NameMapping> nameMap;
 	
 	// maps for fast access
-	private Map<Integer,WholeNetworkAlter> wholeNetworkAlters;
+	private Map<UUID,WholeNetworkAlter> wholeNetworkAlters;
 	private Map<Pair<WholeNetworkAlter,WholeNetworkAlter>,WholeNetworkTie> wholeNetworkTies;
 
 	private Settings settings;
 	
 	public WholeNetwork(Study study, List<Interview> interviews,
 			List<NameMapping> nameMap, Settings settings, 
-			Function2<Map<String,String>,Interview,Integer> getAlterAttributes) 
+			Function2<Map<String,String>,Interview,UUID> getAlterAttributes) 
 	{
 		super();
 		this.study = study;
@@ -63,13 +65,13 @@ public class WholeNetwork {
 		public DiscrepancyStrategy discrepancyStrategy = DiscrepancyStrategy.Majority;
 	}
 	
-	public void build(Function2<Map<String,String>,Interview,Integer> getAlterAttributes) {
-		wholeNetworkAlters = new HashMap<Integer,WholeNetworkAlter>();
+	public void build(Function2<Map<String,String>,Interview,UUID> getAlterAttributes) {
+		wholeNetworkAlters = new HashMap<UUID,WholeNetworkAlter>();
 		wholeNetworkTies = new HashMap<Pair<WholeNetworkAlter,WholeNetworkAlter>,WholeNetworkTie>();
 		
 		// add all alters
 		for(NameMapping mapping : nameMap) {
-			int group = mapping.getGroup();
+			UUID group = mapping.getGroup();
 			if(!wholeNetworkAlters.containsKey(group)) {
 				wholeNetworkAlters.put(group, new WholeNetworkAlter(group));
 			}
@@ -79,8 +81,8 @@ public class WholeNetwork {
 		}
 		
 		// remove WholeNetworkAlters that are not mentioned in enough interviews
-		Map<Integer,WholeNetworkAlter> remainingAlters = new HashMap<Integer,WholeNetworkAlter>();
-		for(Entry<Integer,WholeNetworkAlter> entry : wholeNetworkAlters.entrySet()) {
+		Map<UUID,WholeNetworkAlter> remainingAlters = new HashMap<UUID,WholeNetworkAlter>();
+		for(Entry<UUID,WholeNetworkAlter> entry : wholeNetworkAlters.entrySet()) {
 			if(entry.getValue().getOccurences().size() < settings.inclusionThreshold) {
 				if(settings.alwaysIncludeEgo) {
 					boolean isEgo = false;
@@ -112,12 +114,12 @@ public class WholeNetwork {
 		
 		for(Interview interview : interviews) {
 			
-			String [] thisInterviewAlterlist = interview.getAlterList();
+			List<Alter> thisInterviewAlterlist = interview.getAlterList();
 			
 			// tie the ego to all alters
 			Pair<WholeNetworkAlter,NameMapping> ego = findAlter(interview, -1);
 			if(ego != null) {
-				for(int i = 0; i < interview.getAlterList().length; i++) {
+				for(int i = 0; i < interview.getAlterList().size(); i++) {
 					Pair<WholeNetworkAlter,NameMapping> alter = findAlter(interview, i);
 					if(alter != null) {
 						tie(ego, alter, ego.getFirst().getId(), true, true);
@@ -133,12 +135,12 @@ public class WholeNetwork {
 					try {
 						int [][] adj = interview.generateAdjacencyMatrix(q, false).asMatrix();
 						
-						int alters = Math.min(adj.length,thisInterviewAlterlist.length);
+						int alters = Math.min(adj.length,thisInterviewAlterlist.size());
 						for(int i = 0; i < alters; i++) {
 							for(int j = i+1; j < alters; j++) {
 								boolean adjacent = adj[i][j] == 1;
-								String alter1 = thisInterviewAlterlist[i];
-								String alter2 = thisInterviewAlterlist[j];
+								Alter alter1 = thisInterviewAlterlist.get(i);
+								Alter alter2 = thisInterviewAlterlist.get(j);
 								logger.debug(alter1 + "("+i+") and " + alter2 + "("+j+") are" +
 										(adjacent ? " " : " not ")+"adjacent");
 	
@@ -182,7 +184,7 @@ public class WholeNetwork {
 		//throw new IllegalArgumentException("Alter did not exist -- it must have been derived from somewhere, so we *must* find it");
 	}
 
-	public Map<Integer, WholeNetworkAlter> getWholeNetworkAlters() {
+	public Map<UUID, WholeNetworkAlter> getWholeNetworkAlters() {
 		return wholeNetworkAlters;
 	}
 
@@ -211,7 +213,7 @@ public class WholeNetwork {
 	}
 	
 	private void tie(Pair<WholeNetworkAlter,NameMapping> wholeAlter1, Pair<WholeNetworkAlter,NameMapping> wholeAlter2,
-			Integer reporterMappingId, boolean isTied, boolean egoReportingOnSelf) 
+			UUID reporterMappingId, boolean isTied, boolean egoReportingOnSelf) 
 	{
 		
 		Pair<WholeNetworkAlter, WholeNetworkAlter> tieKey = new Pair<WholeNetworkAlter,WholeNetworkAlter>(wholeAlter1.getFirst(), wholeAlter2.getFirst());
@@ -229,17 +231,17 @@ public class WholeNetwork {
 		}
 	}
 	
-	public Pair<String[],int[][]> getAdjacencyMatrix() {
+	public Pair<Alter[],int[][]> getAdjacencyMatrix() {
 		
-		List<WholeNetworkAlter> alterList = 
-			new ArrayList<WholeNetworkAlter>(wholeNetworkAlters.values());
+		List<WholeNetworkAlter> alterList = new ArrayList<WholeNetworkAlter>(wholeNetworkAlters.values());
 		
 		
 		int size = alterList.size();
 		
-		String [] names = new String[size];
+		Alter [] names = new Alter[size];
 		for(int i = 0; i < names.length; i++) {
-			names[i] = alterList.get(i).getId()+"";
+			WholeNetworkAlter a = alterList.get(i);
+			names[i] = new Alter(a.toString(),a.getId()); // TODO use a UUID
 		}
 		
 		int [][] adj = new int[size][size];
@@ -269,6 +271,6 @@ public class WholeNetwork {
 			}
 		}
 		
-		return new Pair<String[],int[][]>(names,adj);
+		return new Pair<Alter[],int[][]>(names,adj);
 	}
 }

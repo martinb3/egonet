@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JFrame;
@@ -21,6 +22,7 @@ import org.egonet.io.InterviewReader;
 import org.egonet.io.StudyReader;
 import org.egonet.model.Interview;
 import org.egonet.model.Study;
+import org.egonet.model.alter.Alter;
 import org.egonet.model.question.AlterPairQuestion;
 import org.egonet.model.question.Question;
 import org.slf4j.Logger;
@@ -58,7 +60,7 @@ public class CombineInterviews
 
 		String[] fileList = currentDirectory.list();	
 		InterviewFileFilter filter = new InterviewFileFilter(study, "Interview Files", "int");
-		ArrayList<String> alterList = new ArrayList<String>();
+		ArrayList<Alter> alterList = new ArrayList<Alter>();
 		int[][] adj = null;
 
 		Set<Edge> allPairs = new HashSet<Edge>();
@@ -84,8 +86,8 @@ public class CombineInterviews
 			
 			
 
-			String [] thisInterviewAlterlist = interview.getAlterList();
-			alterList.addAll(Arrays.asList(interview.getAlterList()));
+			List<Alter> thisInterviewAlterlist = interview.getAlterList();
+			alterList.addAll(interview.getAlterList());
 
 			Iterator<Long> questions = study.getQuestionOrder(AlterPairQuestion.class).iterator();
 			while (questions.hasNext()) {
@@ -102,8 +104,8 @@ public class CombineInterviews
 						if(adj[i][j] == 1 && i != j)
 						{
 							
-							String alter1 = thisInterviewAlterlist[i];
-							String alter2 = thisInterviewAlterlist[j];
+							String alter1 = thisInterviewAlterlist.get(i).getName();
+							String alter2 = thisInterviewAlterlist.get(j).getName();
 							
 							allPairs.add(new Edge(alter1, alter2));
 							
@@ -128,9 +130,9 @@ public class CombineInterviews
 			vertices.add(v2);
 		}
 		
-		for(String isolate : alterList)
+		for(Alter isolate : alterList)
 		{
-			Vertex v = new Vertex(isolate);
+			Vertex v = new Vertex(isolate.getName());
 			vertices.add(v);
 		}
 		
@@ -148,9 +150,9 @@ public class CombineInterviews
 			graph.addEdge(pair, Arrays.asList(v1,v2));
 		}
 		
-		for(String isolate : alterList)
+		for(Alter isolate : alterList)
 		{
-			Vertex v = new Vertex(isolate);
+			Vertex v = new Vertex(isolate.getName());
 			if(!graph.getVertices().contains(v))
 				graph.addVertex(v);
 		}

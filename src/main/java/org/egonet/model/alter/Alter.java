@@ -1,6 +1,9 @@
 package org.egonet.model.alter;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
 
 public class Alter implements Comparable<Alter> {
@@ -84,5 +87,15 @@ public class Alter implements Comparable<Alter> {
 	
 	public UUID getId() {
 		return _id;
+	}
+	
+	public static List<Alter> filterByID(List<Alter> originals, UUID id) {
+		ArrayList<Alter> ret = new ArrayList<Alter>(originals.size());
+		for(Alter o : originals) {
+			if(o.getId().equals(id))
+				ret.add(o);
+		}
+		
+		return ret;
 	}
 }

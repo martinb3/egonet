@@ -607,7 +607,7 @@ public class ClientQuestionPanel extends JPanel implements Observer {
                                     qs = "Enter the names of " + altersRemain + " people. ";
                             else
                                     qs = "Enter the names of at least " + altersRemain + " people, up to " + 
-                                            (study.getMaximumNumberOfAlters()-egoClient.getInterview().getAlterList().length)+ " people. ";
+                                            (study.getMaximumNumberOfAlters()-egoClient.getInterview().getAlterList().size())+ " people. ";
                         else
                             qs = "Enter the names of at least " +altersRemain +" people. You have no limit of names.";
                         
@@ -1170,7 +1170,7 @@ public class ClientQuestionPanel extends JPanel implements Observer {
                         
                        
                         
-                        int totalAltersCount = interview.getAlterList().length;
+                        int totalAltersCount = interview.getAlterList().size();
                         //Depending on study mode, the range of valid number of alters, changes.
                         if(egoClient.getStudy().isUnlimitedAlterMode())
                         {

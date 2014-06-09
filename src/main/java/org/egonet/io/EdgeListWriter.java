@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
+import org.egonet.model.alter.Alter;
 import org.egonet.util.FileHelpers;
 
 public class EdgeListWriter extends FileWriter {
@@ -29,7 +31,7 @@ public class EdgeListWriter extends FileWriter {
 		super(fileName);
 	}
 
-	public void writeEdgelist(String [] thisInterviewAlterlist, int [][] adj) throws IOException {
+	public void writeEdgelist(List<Alter> thisInterviewAlterlist, int [][] adj) throws IOException {
 		for(int i = 0; i < adj.length; i++)
 		{
 			for(int j = i+1; j < adj[i].length; j++)
@@ -38,8 +40,8 @@ public class EdgeListWriter extends FileWriter {
 				if(i != j)
 				{
 					
-					String alter1 = thisInterviewAlterlist[i];
-					String alter2 = thisInterviewAlterlist[j];
+					String alter1 = thisInterviewAlterlist.get(i).getName();
+					String alter2 = thisInterviewAlterlist.get(j).getName();
 					int edgeValue = adj[i][j];
 					if(edgeValue != 0) { // Don't need to include edges that don't 
 						                 // represent a connection.

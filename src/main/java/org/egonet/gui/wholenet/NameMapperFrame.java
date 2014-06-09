@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -26,6 +27,7 @@ import org.egonet.io.wholenet.NameMappingReader;
 import org.egonet.io.wholenet.NameMappingWriter;
 import org.egonet.model.Interview;
 import org.egonet.model.Study;
+import org.egonet.model.alter.Alter;
 import org.egonet.model.answer.*;
 import org.egonet.model.question.AlterQuestion;
 import org.egonet.model.question.Question;
@@ -92,35 +94,35 @@ public class NameMapperFrame extends JFrame {
 	public class NameMapping implements Comparable<NameMapping> {
 		final Study study;
 		final Interview interview;
-		final Integer alterNumber;
+		final UUID alterNumber;
 		final String alterName;
 		
-		private Integer group;
+		private UUID group;
 		
-		public NameMapping(Study study, Interview interview, Integer alterNumber, Integer group) {
+		public NameMapping(Study study, Interview interview, UUID alterNumber, UUID group) {
 			super();
 			this.interview = interview;
 			this.study = study;
 			this.alterNumber = alterNumber;
-			this.alterName = interview.getAlterList()[alterNumber];
+			this.alterName = Alter.filterByID(interview.getAlterList(),alterNumber).get(0).getName();
 			this.group = group;
 		}
 		
 		// ego constructor
-		public NameMapping(Study study, Interview interview, String iName, Integer group) {
+		public NameMapping(Study study, Interview interview, String iName, UUID group) {
 			super();
 			this.interview = interview;
 			this.study = study;
-			this.alterNumber = -1;
+			this.alterNumber = UUID.randomUUID();
 			this.alterName = new Name(iName).toString();
 			this.group = group;
 		}
 
-		public Integer getGroup() {
+		public UUID getGroup() {
 			return group;
 		}
 
-		public void setGroup(Integer group) {
+		public void setGroup(UUID group) {
 			this.group = group;
 		}
 
@@ -132,7 +134,7 @@ public class NameMapperFrame extends JFrame {
 			return interview;
 		}
 
-		public Integer getAlterNumber() {
+		public UUID getAlterNumber() {
 			return alterNumber;
 		}
 		
@@ -198,7 +200,7 @@ public class NameMapperFrame extends JFrame {
 		
 		private final List<Question> alterQuestions;
 		private final Set<Long> alterQuestionIds;
-		private final Map<Triple<Long,String,Integer>,Answer> questionInterviewAlterToAnswer;
+		private final Map<Triple<Long,String,UUID>,Answer> questionInterviewAlterToAnswer;
 		
 		public Map<String,String> 
 		attributesForInterviewAndAlterId(Interview interview,Integer alterId) {
@@ -218,7 +220,7 @@ public class NameMapperFrame extends JFrame {
 			mappings = new ArrayList<NameMapping>();
 			alterQuestions = new ArrayList<Question>();
 			alterQuestionIds = new TreeSet<Long>();
-			questionInterviewAlterToAnswer = new TreeMap<Triple<Long,String,Integer>,Answer>();
+			questionInterviewAlterToAnswer = new TreeMap<Triple<Long,String,UUID>,Answer>();
 			
 			for(Question question : study.getQuestions().values()) {
 				if(question instanceof AlterQuestion) {
@@ -232,22 +234,22 @@ public class NameMapperFrame extends JFrame {
 			for(Pair<File, Interview> entry : interviewMap) {
 				Interview interview = entry.getSecond();
 
-				NameMapping egoMapping = new NameMapping(study, interview, entry.getFirst().getName(), group++);
+				NameMapping egoMapping = new NameMapping(study, interview, entry.getFirst().getName(), UUID.randomUUID());
 				mappings.add(egoMapping);
 				
-				String [] alterList = interview.getAlterList();
-				for(int i = 0; i < alterList.length; i++) {
-					NameMapping mapping = new NameMapping(study, interview, i, group++);
+				List<Alter> alterList = interview.getAlterList();
+				for(Alter alter : alterList) {
+					NameMapping mapping = new NameMapping(study, interview, alter.getId(), UUID.randomUUID());
 					mappings.add(mapping);
 					
 				}
 				for(Answer answer : interview.get_answers()) {
 					if(alterQuestionIds.contains(answer.getQuestionId())) {
 						questionInterviewAlterToAnswer.put(
-								new Triple<Long,String,Integer>(
+								new Triple<Long,String,UUID>(
 										answer.getQuestionId(),
 										interview.toString(),
-										answer.firstAlter()),
+										answer.firstAlter().getId()),
 								answer);
 					}
 				}
@@ -283,8 +285,8 @@ public class NameMapperFrame extends JFrame {
 			}
 			else { // Answer to alter question
 				Question question = questionForColumn(columnIndex);
-				Triple<Long,String,Integer> key =
-					new Triple<Long,String,Integer>(
+				Triple<Long,String,UUID> key =
+					new Triple<Long,String,UUID>(
 							question.UniqueId,
 							row.getInterview().toString(),
 							row.alterNumber);
@@ -308,9 +310,9 @@ public class NameMapperFrame extends JFrame {
 	    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 			if(columnIndex == 2 && aValue instanceof String) {
 				
-				Integer i = null;
+				UUID i = null;
 				try {
-					i = Integer.parseInt(aValue.toString());
+					i = UUID.fromString(aValue.toString());
 				} 
 				catch(NumberFormatException ex) {
 					return;
@@ -575,7 +577,7 @@ public class NameMapperFrame extends JFrame {
     private void doDefaultSimilarity(MapperTableModel model, float cutoff) {
     	AbstractStringMetric metric = new Levenshtein();
     	
-    	Map<Integer,List<NameMapping>> groupings = new HashMap<Integer,List<NameMapping>>();
+    	Map<UUID,List<NameMapping>> groupings = new HashMap<UUID,List<NameMapping>>();
     	int groupCounter = 1;
     	
     	ArrayList<NameMapping> names = new ArrayList<NameMapping>(model.getMappings());
@@ -585,8 +587,8 @@ public class NameMapperFrame extends JFrame {
     		if(current == null || current.alterName == null)
     			continue;
     		
-    		float highest = 0.0f; Integer highestGroup = null;
-    		for(Map.Entry<Integer,List<NameMapping>> entry : groupings.entrySet()) {
+    		float highest = 0.0f; UUID highestGroup = null;
+    		for(Map.Entry<UUID,List<NameMapping>> entry : groupings.entrySet()) {
     			float averageScore = 0; int elementCount = 0;
     			for(NameMapping entryMapping : entry.getValue()) {
     				
@@ -617,12 +619,12 @@ public class NameMapperFrame extends JFrame {
     		else {
     			List<NameMapping> destGroup = new ArrayList<NameMapping>();
     			destGroup.add(current);
-    			groupings.put(groupCounter++, destGroup);
+    			groupings.put(UUID.randomUUID(), destGroup);
     		}
     	}
     	
     	for(NameMapping map : model.getMappings()) {
-    		for(Integer group : groupings.keySet()) {
+    		for(UUID group : groupings.keySet()) {
     			if(groupings.get(group).contains(map)) {
     				map.setGroup(group);
     				break;

@@ -218,12 +218,12 @@ public class Interview implements Comparable<Interview> {
                             
                            
                 }
-		int j,k;
-		
 		/* Alter Questions */
-		for (j = 0; j < _numAlters; j++) {
+		for (int j = 0; j < _numAlters; j++) {
 			questions = _study.getQuestionOrder(AlterQuestion.class).iterator();
-			int[] alter = { j };
+			
+			Alter [] alter = { _alterList.get(j) };
+			
 			while (questions.hasNext()) {
 				Long questionId = (Long) questions.next();
 				Question question = _study.getQuestions().getQuestion(questionId);
@@ -239,10 +239,10 @@ public class Interview implements Comparable<Interview> {
 		}
 
 		/* Alter Pair Questions */
-		for (k = 0; k < _numAlters; k++) {
-			for (j = (k + 1); j < _numAlters; j++) {
+		for (int k = 0; k < _numAlters; k++) {
+			for (int j = (k + 1); j < _numAlters; j++) {
 				questions = _study.getQuestionOrder(AlterPairQuestion.class).iterator();
-				int[] alters = { k, j };
+				Alter[] alters = { _alterList.get(k), _alterList.get(j) };
 				while (questions.hasNext()) {
 					Question question = _study.getQuestions().getQuestion((Long) questions.next());
 
@@ -319,7 +319,7 @@ public class Interview implements Comparable<Interview> {
 	 * 
 	 * @return s String Array of alters
 	 */
-	public String[] getAlterList() {
+	public List<Alter> getAlterList() {
 		return _alterList;
 	}
 

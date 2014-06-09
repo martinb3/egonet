@@ -1,6 +1,7 @@
 package org.egonet.graph.wholenet;
 
 import java.util.HashSet;
+import java.util.UUID;
 
 import com.google.common.collect.Sets;
 
@@ -25,17 +26,17 @@ public class WholeNetworkTie {
 	private int tiedYes = 0;
 	private int tiedNo = 0;
 	
-	private HashSet<Integer> tiedYesSet = Sets.newHashSet();
-	private HashSet<Integer> tiedNoSet = Sets.newHashSet();
+	private HashSet<UUID> tiedYesSet = Sets.newHashSet();
+	private HashSet<UUID> tiedNoSet = Sets.newHashSet();
 	
-	public HashSet<Integer> tiedYes() {
+	public HashSet<UUID> tiedYes() {
 		return tiedYesSet;
 	}
-	public HashSet<Integer> tiedNo() {
+	public HashSet<UUID> tiedNo() {
 		return tiedNoSet;
 	}
 	
-	public void addEvidence(Integer reporterMappingId, boolean isTied) {
+	public void addEvidence(UUID reporterMappingId, boolean isTied) {
 		if(isTied) {
 			tiedYes++;
 			if(reporterMappingId != null) {
@@ -51,7 +52,7 @@ public class WholeNetworkTie {
 	
 	private boolean egoSaysTied = false;
 	
-	public void addEvidenceEgoSaysTied(Integer reporterMappingId) {
+	public void addEvidenceEgoSaysTied(UUID reporterMappingId) {
 		egoSaysTied = true;
 		addEvidence(reporterMappingId,true);
 	}

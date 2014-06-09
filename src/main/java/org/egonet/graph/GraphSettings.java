@@ -36,6 +36,7 @@ import org.egonet.graph.NodeProperty.NodeShape;
 import org.egonet.gui.interview.*;
 import org.egonet.model.QuestionList;
 import org.egonet.model.Study;
+import org.egonet.model.alter.Alter;
 import org.egonet.model.answer.*;
 import org.egonet.model.question.AlterQuestion;
 import org.egonet.model.question.Question;
@@ -54,14 +55,11 @@ public class GraphSettings {
 
 	final private static Logger logger = LoggerFactory.getLogger(GraphSettings.class);
 	
-	private Map<Vertex, NodeProperty> nodeSettingsMap = Collections
-			.synchronizedMap(new HashMap<Vertex, NodeProperty>());
+	private Map<Vertex, NodeProperty> nodeSettingsMap = Collections.synchronizedMap(new HashMap<Vertex, NodeProperty>());
 
-	private Map<Edge, EdgeProperty> edgeSettingsMap = Collections
-			.synchronizedMap(new HashMap<Edge, EdgeProperty>());
+	private Map<Edge, EdgeProperty> edgeSettingsMap = Collections.synchronizedMap(new HashMap<Edge, EdgeProperty>());
 
-	private java.util.List<GraphSettingsEntry> QAsettings = Collections
-			.synchronizedList(new ArrayList<GraphSettingsEntry>());
+	private java.util.List<GraphSettingsEntry> QAsettings = Collections.synchronizedList(new ArrayList<GraphSettingsEntry>());
 	
 	private boolean detailedTooltips = false;
 
@@ -120,7 +118,7 @@ public class GraphSettings {
 		
 		// initialize nodes with default settings
 		for (int i = 0; i < noOfAlters; i++) {
-			String alterName = egoClient.getInterview().getAlterList()[i];
+			String alterName = egoClient.getInterview().getAlterList().get(i).getName();
 			Color color = Color.RED;
 			int size = 1;
 			NodeShape shape = NodeShape.Circle;
@@ -537,20 +535,25 @@ public class GraphSettings {
 
 	private String getAlterInfo(int alterIndex, boolean detail) {
 		String[] alterToolTip = new String[egoClient.getInterview().getNumberAlters()];
+		
 		for (int i = 0; i < alterToolTip.length; i++) {
-			alterToolTip[i] = "<html>" + egoClient.getInterview().getAlterList()[i]
-					+ "<br>";
+			alterToolTip[i] = "<html>" + egoClient.getInterview().getAlterList().get(i)+ "<br>";
 		}
+		
 		Answer[] answers = egoClient.getInterview().get_answers();
-		for (Answer answer : answers) {
+		for (int i = 0 ; i < answers.length; i++) {
+			Answer answer = answers[i];
+			
 			String questionTitle = "";
 			String answerString = "";
 			Question question = egoClient.getStudy().getQuestion(answer.getQuestionId());
 			if (question instanceof AlterQuestion) {
 				questionTitle = question.title;
 				answerString = answer.string + " " + (detail ? "(index="+answer.getIndex()+",value="+answer.getValue()+")" : "");
-				for (int alter : answer.getAlters()) {
-					alterToolTip[alter] += questionTitle + " : " + answerString + "<br>";
+				
+				// TODO: This used to be alterToolTip[alter]
+				for (Alter alter : answer.getAlters()) {
+					alterToolTip[i] += questionTitle + " : " + answerString + "<br>";
 				}
 			}
 

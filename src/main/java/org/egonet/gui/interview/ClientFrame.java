@@ -28,6 +28,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
@@ -49,6 +50,7 @@ import org.egonet.io.EdgeListWriter;
 import org.egonet.mdi.MDIContext;
 import org.egonet.model.Interview;
 import org.egonet.model.Study;
+import org.egonet.model.alter.Alter;
 import org.egonet.model.question.AlterPairQuestion;
 import org.egonet.model.question.Question;
 import org.egonet.statistics.StatRecord;
@@ -405,7 +407,7 @@ public class ClientFrame extends MDIChildFrame implements InternalFrameListener 
 				Interview interview = egoClient.getInterview();
 				Study study = egoClient.getStudy();
 				
-				String [] thisInterviewAlterlist = interview.getAlterList();
+				List<Alter> thisInterviewAlterlist = interview.getAlterList();
 
 				Iterator<Long> questions = study.getQuestionOrder(AlterPairQuestion.class).iterator();
 				while (questions.hasNext()) {

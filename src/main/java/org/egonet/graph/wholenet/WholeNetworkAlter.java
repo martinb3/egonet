@@ -9,9 +9,9 @@ import com.google.common.collect.Maps;
 
 public class WholeNetworkAlter implements Comparable<WholeNetworkAlter> {
 
-	private final Integer id;
+	private final UUID id;
 	private final List<NameMapping> occurences;
-	public WholeNetworkAlter(Integer id) {
+	public WholeNetworkAlter(UUID id) {
 		super();
 		this.id = id;
 		this.occurences = new ArrayList<NameMapping>();
@@ -21,7 +21,7 @@ public class WholeNetworkAlter implements Comparable<WholeNetworkAlter> {
 		occurences.add(mapping);
 	}
 
-	public Integer getId() {
+	public UUID getId() {
 		return id;
 	}
 

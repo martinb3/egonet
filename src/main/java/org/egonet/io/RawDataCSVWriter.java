@@ -13,6 +13,7 @@ import net.sf.functionalj.tuple.Triple;
 import org.egonet.io.InterviewDataWritingUtil.StudyQuestionsByCategoryAndId;
 import org.egonet.model.Interview;
 import org.egonet.model.Study;
+import org.egonet.model.alter.Alter;
 import org.egonet.model.answer.*;
 import org.egonet.model.question.Question;
 import org.slf4j.Logger;
@@ -159,12 +160,13 @@ public class RawDataCSVWriter {
 				InterviewDataWritingUtil.InterviewAnswers answers = 
 					InterviewDataWritingUtil.interviewAnswers(study, interview);
 			
-				String[] alterList = interview.getAlterList();
+				// TODO: WTF
+				Alter[] alterList = interview.getAlterList().toArray(new Alter[0]);
 				Integer numAlters = alterList.length;
 				for(Integer alterId1 = 0; alterId1 < numAlters; alterId1++) {
-					String alterName1 = interview.getAlterList()[alterId1];
+					Alter alterName1 = interview.getAlterList().get(alterId1);
 					for(Integer alterId2 = alterId1 + 1; alterId2 < numAlters; alterId2++) {
-						String alterName2 = alterList[alterId2];
+						String alterName2 = alterList.get(alterId2);
 						ArrayList<String> rowData = new ArrayList<String>();
 						rowData.add(egoId.toString());
 						rowData.add(egoName);

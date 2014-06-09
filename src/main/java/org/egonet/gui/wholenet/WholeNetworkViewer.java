@@ -29,6 +29,7 @@ import org.egonet.io.AdjacencyWriter;
 import org.egonet.io.EdgeListWriter;
 import org.egonet.io.wholenet.ConsensusDataWriter;
 import org.egonet.model.Study;
+import org.egonet.model.alter.Alter;
 import org.egonet.util.CatchingAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,7 +146,7 @@ public class WholeNetworkViewer extends JFrame {
 							dataFile = new File(path);
 						}
 						EdgeListWriter fw = new EdgeListWriter(dataFile);
-						Pair<String[], int[][]> p = net.getAdjacencyMatrix();
+						Pair<Alter[], int[][]> p = net.getAdjacencyMatrix();
 						fw.writeEdgelist(p.getFirst(), p.getSecond());
 						fw.close();
 					}
