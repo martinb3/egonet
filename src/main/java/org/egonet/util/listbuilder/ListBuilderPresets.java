@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 
-import org.egonet.model.question.Selection;
+import org.egonet.model.v1.question.Selection;
 
 public class ListBuilderPresets
 {

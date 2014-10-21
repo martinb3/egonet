@@ -40,9 +40,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
-import org.egonet.model.Study;
-import org.egonet.model.Shared.AlterNameModel;
-import org.egonet.model.Shared.AlterSamplingModel;
+import org.egonet.model.v1.Study;
+import org.egonet.model.v1.Shared.AlterNameModel;
+import org.egonet.model.v1.Shared.AlterSamplingModel;
 import org.egonet.util.WholeNumberDocument;
 
 

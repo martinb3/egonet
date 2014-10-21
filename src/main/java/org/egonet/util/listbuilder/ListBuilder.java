@@ -22,8 +22,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import org.egonet.gui.author.CategoryInputPane;
-import org.egonet.model.Shared.AlterNameModel;
-import org.egonet.model.question.Selection;
+import org.egonet.model.v1.Shared.AlterNameModel;
+import org.egonet.model.v1.question.Selection;
 
 import java.awt.BorderLayout;
 import java.awt.event.*;

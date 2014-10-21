@@ -33,11 +33,11 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.egonet.model.answer.CategoricalAnswer;
-import org.egonet.model.question.AlterPairQuestion;
-import org.egonet.model.question.AlterPromptQuestion;
-import org.egonet.model.question.Question;
-import org.egonet.model.question.Selection;
+import org.egonet.model.v1.answer.CategoricalAnswer;
+import org.egonet.model.v1.question.AlterPairQuestion;
+import org.egonet.model.v1.question.AlterPromptQuestion;
+import org.egonet.model.v1.question.Question;
+import org.egonet.model.v1.question.Selection;
 import org.egonet.util.CatchingAction;
 import org.egonet.util.listbuilder.ListBuilder;
 

@@ -43,7 +43,7 @@ import org.egonet.util.EgonetAnalytics;
 import org.egonet.util.ExtensionFileFilter;
 import org.egonet.util.SwingWorker;
 import org.egonet.io.RawDataCSVWriter;
-import org.egonet.model.Interview;
+import org.egonet.model.v1.Interview;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

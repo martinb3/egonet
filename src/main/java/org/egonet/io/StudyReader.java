@@ -8,11 +8,11 @@ import java.util.List;
 import org.egonet.exceptions.DuplicateQuestionException;
 import org.egonet.exceptions.EgonetException;
 import org.egonet.exceptions.MalformedQuestionException;
-import org.egonet.model.Study;
-import org.egonet.model.Shared.AlterNameModel;
-import org.egonet.model.Shared.AlterSamplingModel;
-import org.egonet.model.answer.*;
-import org.egonet.model.question.*;
+import org.egonet.model.v1.Study;
+import org.egonet.model.v1.Shared.AlterNameModel;
+import org.egonet.model.v1.Shared.AlterSamplingModel;
+import org.egonet.model.v1.answer.*;
+import org.egonet.model.v1.question.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

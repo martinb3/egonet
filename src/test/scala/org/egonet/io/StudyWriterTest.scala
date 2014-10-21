@@ -2,8 +2,8 @@ package org.egonet.io
 
 
 import org.egonet.EgonetSpec
-import org.egonet.model.Study
-import org.egonet.model.Shared._
+import org.egonet.model.v1.Study
+import org.egonet.model.v1.Shared._
 import java.io.{File => JFile}
 import java.util.UUID
 

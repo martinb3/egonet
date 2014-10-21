@@ -18,9 +18,6 @@
  */
 package org.egonet.gui.author;
 
-import org.egonet.model.Shared;
-import org.egonet.model.question.*;
-
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -46,12 +43,12 @@ import javax.swing.text.DefaultEditorKit;
 import org.egonet.exceptions.CorruptedInterviewException;
 import org.egonet.gui.MDIChildFrame;
 import org.egonet.mdi.MDIContext;
-import org.egonet.model.question.Question;
 import org.egonet.util.CatchingAction;
 import org.egonet.util.EgonetAnalytics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.egonet.model.question.StudyQuestion;
+import org.egonet.model.v1.Shared;
+import org.egonet.model.v1.question.*;
 
 public class EgoFrame extends MDIChildFrame implements Observer, InternalFrameListener {
 	

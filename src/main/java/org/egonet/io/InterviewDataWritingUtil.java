@@ -11,13 +11,13 @@ import net.sf.functionalj.tuple.Pair;
 import net.sf.functionalj.tuple.Triple;
 
 import org.egonet.exceptions.CorruptedInterviewException;
-import org.egonet.model.Interview;
-import org.egonet.model.Study;
-import org.egonet.model.answer.*;
-import org.egonet.model.question.AlterPairQuestion;
-import org.egonet.model.question.AlterQuestion;
-import org.egonet.model.question.EgoQuestion;
-import org.egonet.model.question.Question;
+import org.egonet.model.v1.Interview;
+import org.egonet.model.v1.Study;
+import org.egonet.model.v1.answer.*;
+import org.egonet.model.v1.question.AlterPairQuestion;
+import org.egonet.model.v1.question.AlterQuestion;
+import org.egonet.model.v1.question.EgoQuestion;
+import org.egonet.model.v1.question.Question;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.swing.ProgressMonitor;
 
-import org.egonet.model.Study;
+import org.egonet.model.v1.Study;
 import org.egonet.util.ExtensionFileFilter;
 
 /**

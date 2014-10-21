@@ -34,8 +34,8 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import org.egonet.gui.interview.EgoClient;
-import org.egonet.model.question.AlterPairQuestion;
-import org.egonet.model.question.Question;
+import org.egonet.model.v1.question.AlterPairQuestion;
+import org.egonet.model.v1.question.Question;
 import org.egonet.statistics.models.BetweennessModel;
 import org.egonet.statistics.models.CliqueModel;
 import org.egonet.statistics.models.ClosenessModel;

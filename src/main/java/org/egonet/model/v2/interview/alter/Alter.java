@@ -1,4 +1,4 @@
-package org.egonet.model.alter;
+package org.egonet.model.v2.interview.alter;
 
 import java.util.Comparator;
 import java.util.UUID;

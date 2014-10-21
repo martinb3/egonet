@@ -14,8 +14,8 @@ import net.miginfocom.swing.MigLayout;
 
 import org.egonet.io.InterviewFileFilter;
 import org.egonet.io.InterviewReader;
-import org.egonet.model.Interview;
-import org.egonet.model.Study;
+import org.egonet.model.v1.Interview;
+import org.egonet.model.v1.Study;
 import org.egonet.util.CatchingAction;
 import org.egonet.util.SwingWorker;
 import org.slf4j.Logger;

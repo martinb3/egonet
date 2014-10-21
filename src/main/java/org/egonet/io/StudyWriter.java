@@ -9,12 +9,12 @@ import java.util.Iterator;
 import javax.swing.JOptionPane;
 
 import org.egonet.exceptions.EgonetException;
-import org.egonet.model.QuestionList;
-import org.egonet.model.Shared;
-import org.egonet.model.Study;
-import org.egonet.model.question.Question;
-import org.egonet.model.question.Selection;
-import org.egonet.model.question.StudyQuestion;
+import org.egonet.model.v1.QuestionList;
+import org.egonet.model.v1.Shared;
+import org.egonet.model.v1.Study;
+import org.egonet.model.v1.question.Question;
+import org.egonet.model.v1.question.Selection;
+import org.egonet.model.v1.question.StudyQuestion;
 import org.egonet.util.DateUtils;
 
 import electric.xml.Document;
@@ -37,7 +37,7 @@ public class StudyWriter {
 	      Element studyElement = document.setRoot("Package");
 	      studyElement.setAttribute("Id", ""+study.getStudyId());
 	      studyElement.setAttribute("InUse", study.isInUse() ? "Y" : "N");
-	      studyElement.setAttribute("Creator", org.egonet.model.Shared.version);
+	      studyElement.setAttribute("Creator", org.egonet.model.v1.Shared.version);
 	      studyElement.setAttribute("Updated", DateUtils.getDateString(Calendar.getInstance().getTime(), "dd/MM/yyyy hh:mm a"));
 	      
 	      writeStudyData(studyElement, study);

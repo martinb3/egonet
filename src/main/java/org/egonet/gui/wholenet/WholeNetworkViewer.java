@@ -28,7 +28,7 @@ import org.egonet.graph.wholenet.WholeNetworkTie;
 import org.egonet.io.AdjacencyWriter;
 import org.egonet.io.EdgeListWriter;
 import org.egonet.io.wholenet.ConsensusDataWriter;
-import org.egonet.model.Study;
+import org.egonet.model.v1.Study;
 import org.egonet.util.CatchingAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

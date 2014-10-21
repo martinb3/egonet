@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.egonet.model;
+package org.egonet.model.v1;
 
-import org.egonet.model.answer.*;
+import org.egonet.model.v1.answer.*;
 
 public class QuestionLink implements Cloneable
 {

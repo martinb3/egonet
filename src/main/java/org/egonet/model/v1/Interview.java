@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.egonet.model;
+package org.egonet.model.v1;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,12 +31,12 @@ import javax.swing.DefaultListModel;
 import org.egonet.exceptions.CorruptedInterviewException;
 import org.egonet.exceptions.MissingPairException;
 import org.egonet.gui.EgoStore;
-import org.egonet.model.answer.*;
-import org.egonet.model.question.AlterPairQuestion;
-import org.egonet.model.question.AlterPromptQuestion;
-import org.egonet.model.question.AlterQuestion;
-import org.egonet.model.question.EgoQuestion;
-import org.egonet.model.question.Question;
+import org.egonet.model.v1.answer.*;
+import org.egonet.model.v1.question.AlterPairQuestion;
+import org.egonet.model.v1.question.AlterPromptQuestion;
+import org.egonet.model.v1.question.AlterQuestion;
+import org.egonet.model.v1.question.EgoQuestion;
+import org.egonet.model.v1.question.Question;
 import org.egonet.statistics.StatRecord;
 import org.egonet.statistics.Statistics;
 import org.egonet.statistics.StatRecord.EgoAnswer;

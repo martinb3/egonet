@@ -20,8 +20,8 @@ package org.egonet.statistics.models;
 
 import javax.swing.JTable;
 
-import org.egonet.model.answer.CategoricalAnswer;
-import org.egonet.model.answer.NumericalAnswer;
+import org.egonet.model.v1.answer.CategoricalAnswer;
+import org.egonet.model.v1.answer.NumericalAnswer;
 import org.egonet.statistics.Statistics;
 
 public class QSummaryModel extends StatTableModel

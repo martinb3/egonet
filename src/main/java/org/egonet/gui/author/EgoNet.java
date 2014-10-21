@@ -19,7 +19,7 @@
 package org.egonet.gui.author;
 
 import org.egonet.gui.EgoStore;
-import org.egonet.model.Study;
+import org.egonet.model.v1.Study;
 import org.egonet.util.EgonetAnalytics;
 
 /** ONLY USE THIS CLASS IN AUTHOR PART OF THE TOOL */

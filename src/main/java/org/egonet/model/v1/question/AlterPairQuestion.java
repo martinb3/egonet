@@ -1,4 +1,4 @@
-package org.egonet.model.question;
+package org.egonet.model.v1.question;
 
 public class AlterPairQuestion extends Question {
 	

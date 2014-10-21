@@ -19,8 +19,8 @@
 package org.egonet.gui.interview;
 
 import org.egonet.gui.EgoStore;
-import org.egonet.model.Interview;
-import org.egonet.model.Study;
+import org.egonet.model.v1.Interview;
+import org.egonet.model.v1.Study;
 import org.egonet.util.EgonetAnalytics;
 
 /**

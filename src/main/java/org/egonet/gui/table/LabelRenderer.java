@@ -23,7 +23,7 @@ import javax.swing.table.*;
 
 import java.awt.Component;
 
-import org.egonet.model.question.Selection;
+import org.egonet.model.v1.question.Selection;
 
 /**
  * To Renderer the cell displaying selection 

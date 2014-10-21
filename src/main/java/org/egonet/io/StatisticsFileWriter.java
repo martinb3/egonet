@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
-import org.egonet.model.Interview;
-import org.egonet.model.Study;
-import org.egonet.model.answer.*;
+import org.egonet.model.v1.Interview;
+import org.egonet.model.v1.Study;
+import org.egonet.model.v1.answer.*;
 import org.egonet.statistics.Statistics;
 
 import electric.xml.Document;
@@ -37,7 +37,7 @@ public class StatisticsFileWriter {
 		Element studyElement = document.setRoot("Statistics");
 
 		studyElement.setAttribute("StudyId", study.getStudyId());
-		studyElement.setAttribute("Creator", org.egonet.model.Shared.version);
+		studyElement.setAttribute("Creator", org.egonet.model.v1.Shared.version);
 
 		writeStructuralStatistics(studyElement, interview, stats);
 		writeEgoAnswers(studyElement, interview);

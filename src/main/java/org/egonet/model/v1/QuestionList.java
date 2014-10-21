@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.egonet.model;
+package org.egonet.model.v1;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.egonet.model.question.Question;
+import org.egonet.model.v1.question.Question;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

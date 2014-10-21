@@ -33,9 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.egonet.gui.interview.EgoClient;
 import org.egonet.gui.table.*;
-import org.egonet.model.QuestionList;
-import org.egonet.model.Study;
-import org.egonet.model.question.*;
+import org.egonet.model.v1.QuestionList;
+import org.egonet.model.v1.Study;
+import org.egonet.model.v1.question.*;
 
 
 public class EdgeColorPanel extends JPanel {

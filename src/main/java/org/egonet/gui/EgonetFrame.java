@@ -23,7 +23,7 @@ import org.egonet.gui.author.EgoFrame;
 import org.egonet.gui.author.EgoNet;
 import org.egonet.gui.interview.EgoClient;
 import org.egonet.mdi.*;
-import org.egonet.model.Shared;
+import org.egonet.model.v1.Shared;
 import org.egonet.util.CatchingAction;
 import org.egonet.util.EgonetAnalytics;
 import org.slf4j.Logger;

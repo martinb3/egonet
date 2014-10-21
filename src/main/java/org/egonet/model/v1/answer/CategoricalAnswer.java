@@ -1,4 +1,4 @@
-package org.egonet.model.answer;
+package org.egonet.model.v1.answer;
 
 public class CategoricalAnswer extends Answer {
 

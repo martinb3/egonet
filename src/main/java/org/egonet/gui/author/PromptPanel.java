@@ -37,8 +37,8 @@ import javax.swing.event.ListSelectionListener;
 
 import org.egonet.exceptions.DuplicateQuestionException;
 import org.egonet.gui.interview.ClientQuestionPanel;
-import org.egonet.model.question.AlterPromptQuestion;
-import org.egonet.model.question.Question;
+import org.egonet.model.v1.question.AlterPromptQuestion;
+import org.egonet.model.v1.question.Question;
 
 
 /**

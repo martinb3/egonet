@@ -5,11 +5,11 @@ import java.util.Arrays;
 
 import org.egonet.exceptions.CorruptedInterviewException;
 import org.egonet.exceptions.StudyIdMismatchException;
-import org.egonet.model.Interview;
-import org.egonet.model.Study;
-import org.egonet.model.answer.*;
-import org.egonet.model.question.AlterPromptQuestion;
-import org.egonet.model.question.Question;
+import org.egonet.model.v1.Interview;
+import org.egonet.model.v1.Study;
+import org.egonet.model.v1.answer.*;
+import org.egonet.model.v1.question.AlterPromptQuestion;
+import org.egonet.model.v1.question.Question;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

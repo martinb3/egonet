@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.egonet.model;
+package org.egonet.model.v1;
 
 
 import java.util.*;
@@ -28,10 +28,10 @@ import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 
 import org.egonet.exceptions.DuplicateQuestionException;
-import org.egonet.model.Shared.AlterNameModel;
-import org.egonet.model.Shared.AlterSamplingModel;
-import org.egonet.model.answer.*;
-import org.egonet.model.question.*;
+import org.egonet.model.v1.Shared.AlterNameModel;
+import org.egonet.model.v1.Shared.AlterSamplingModel;
+import org.egonet.model.v1.answer.*;
+import org.egonet.model.v1.question.*;
 
 /*******************************************************************************
  * Stores basic configuration data for the study including question order lists

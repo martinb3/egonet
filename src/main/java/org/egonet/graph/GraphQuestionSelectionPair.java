@@ -20,8 +20,8 @@ package org.egonet.graph;
 
 import java.util.*;
 
-import org.egonet.model.question.Question;
-import org.egonet.model.question.Selection;
+import org.egonet.model.v1.question.Question;
+import org.egonet.model.v1.question.Selection;
 
 public class GraphQuestionSelectionPair {
 

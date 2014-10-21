@@ -33,12 +33,12 @@ import java.awt.event.*;
 import org.egonet.gui.interview.EgoClient;
 import org.egonet.gui.table.LabelRenderer;
 import org.egonet.gui.table.LabelTableModel;
-import org.egonet.model.QuestionList;
-import org.egonet.model.Study;
-import org.egonet.model.answer.*;
-import org.egonet.model.question.AlterQuestion;
-import org.egonet.model.question.Question;
-import org.egonet.model.question.Selection;
+import org.egonet.model.v1.QuestionList;
+import org.egonet.model.v1.Study;
+import org.egonet.model.v1.answer.*;
+import org.egonet.model.v1.question.AlterQuestion;
+import org.egonet.model.v1.question.Question;
+import org.egonet.model.v1.question.Selection;
 
 
 public class NodeLabelPanel extends JPanel {

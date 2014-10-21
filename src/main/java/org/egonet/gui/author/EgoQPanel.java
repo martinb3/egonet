@@ -19,7 +19,7 @@
 package org.egonet.gui.author;
 import javax.swing.JPanel;
 
-import org.egonet.model.question.Question;
+import org.egonet.model.v1.question.Question;
 
 
 

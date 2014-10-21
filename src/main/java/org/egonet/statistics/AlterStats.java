@@ -18,7 +18,7 @@
  */
 package org.egonet.statistics;
 
-import org.egonet.model.answer.Answer;
+import org.egonet.model.v1.answer.Answer;
 
 public class AlterStats
 {

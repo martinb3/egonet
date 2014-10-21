@@ -19,10 +19,10 @@ import org.egonet.gui.EgoStore;
 import org.egonet.io.InterviewFileFilter;
 import org.egonet.io.InterviewReader;
 import org.egonet.io.StudyReader;
-import org.egonet.model.Interview;
-import org.egonet.model.Study;
-import org.egonet.model.question.AlterPairQuestion;
-import org.egonet.model.question.Question;
+import org.egonet.model.v1.Interview;
+import org.egonet.model.v1.Study;
+import org.egonet.model.v1.question.AlterPairQuestion;
+import org.egonet.model.v1.question.Question;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

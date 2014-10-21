@@ -25,6 +25,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
@@ -36,11 +37,11 @@ import javax.swing.event.ListSelectionListener;
 
 import org.egonet.exceptions.DuplicateQuestionException;
 import org.egonet.gui.interview.ClientQuestionPanel;
-import org.egonet.model.Shared;
-import org.egonet.model.answer.Answer;
-import org.egonet.model.answer.CategoricalAnswer;
-import org.egonet.model.answer.TextAnswer;
-import org.egonet.model.question.*;
+import org.egonet.model.v1.Shared;
+import org.egonet.model.v1.answer.Answer;
+import org.egonet.model.v1.answer.CategoricalAnswer;
+import org.egonet.model.v1.answer.TextAnswer;
+import org.egonet.model.v1.question.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

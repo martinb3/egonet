@@ -18,13 +18,6 @@
  */
 package org.egonet.gui.interview;
 
-import org.egonet.model.Interview;
-import org.egonet.model.Shared;
-import org.egonet.model.Study;
-import org.egonet.model.Shared.AlterSamplingModel;
-import org.egonet.model.answer.*;
-import org.egonet.model.question.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,7 +45,12 @@ import javax.swing.text.html.HTMLEditorKit;
 import net.miginfocom.swing.MigLayout;
 
 import org.egonet.exceptions.CorruptedInterviewException;
-import org.egonet.model.question.Question;
+import org.egonet.model.v1.Interview;
+import org.egonet.model.v1.Shared;
+import org.egonet.model.v1.Study;
+import org.egonet.model.v1.Shared.AlterSamplingModel;
+import org.egonet.model.v1.answer.*;
+import org.egonet.model.v1.question.*;
 import org.egonet.util.CardPanel;
 import org.egonet.util.CatchingAction;
 import org.egonet.util.WholeNumberDocument;
@@ -63,6 +61,9 @@ import org.slf4j.LoggerFactory;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+
+
+
 
 
 

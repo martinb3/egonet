@@ -34,11 +34,11 @@ import java.util.*;
 
 import org.egonet.gui.interview.EgoClient;
 import org.egonet.gui.table.*;
-import org.egonet.model.QuestionList;
-import org.egonet.model.Study;
-import org.egonet.model.question.AlterPairQuestion;
-import org.egonet.model.question.Question;
-import org.egonet.model.question.Selection;
+import org.egonet.model.v1.QuestionList;
+import org.egonet.model.v1.Study;
+import org.egonet.model.v1.question.AlterPairQuestion;
+import org.egonet.model.v1.question.Question;
+import org.egonet.model.v1.question.Selection;
 
 
 public class EdgeShapePanel extends JPanel {

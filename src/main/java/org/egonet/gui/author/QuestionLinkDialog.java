@@ -34,11 +34,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.PlainDocument;
 
-import org.egonet.model.answer.*;
-import org.egonet.model.question.AlterPairQuestion;
-import org.egonet.model.question.AlterPromptQuestion;
-import org.egonet.model.question.Question;
-import org.egonet.model.question.Selection;
+import org.egonet.model.v1.answer.*;
+import org.egonet.model.v1.question.AlterPairQuestion;
+import org.egonet.model.v1.question.AlterPromptQuestion;
+import org.egonet.model.v1.question.Question;
+import org.egonet.model.v1.question.Selection;
 import org.egonet.util.CatchingAction;
 import org.egonet.util.WholeNumberDocument;
 

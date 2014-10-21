@@ -1,12 +1,21 @@
 package org.egonet.model.question
 
+
 import scala.collection.JavaConverters._
+
 import org.scalatest.Args
 import org.egonet.EgonetSpec
 import org.egonet.exceptions.MalformedQuestionException
-import org.egonet.model.Shared
-import org.egonet.model.answer.Answer
-import org.egonet.model.answer.CategoricalAnswer
+import org.egonet.model.v1.answer.Answer
+import org.egonet.model.v1.answer.CategoricalAnswer
+import org.egonet.model.v1.Shared;
+import org.egonet.model.v1.question.Question;
+import org.egonet.model.v1.question.Selection;
+import org.egonet.model.v1.question.StudyQuestion;
+import org.egonet.model.v1.question.EgoQuestion;
+import org.egonet.model.v1.question.AlterQuestion;
+import org.egonet.model.v1.question.AlterPromptQuestion;
+import org.egonet.model.v1.question.AlterPairQuestion;
 
 class QuestionTest extends EgonetSpec {
 

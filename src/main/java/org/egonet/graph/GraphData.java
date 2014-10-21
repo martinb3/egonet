@@ -20,14 +20,14 @@ package org.egonet.graph;
 
 import org.apache.commons.collections15.Transformer;
 import org.egonet.gui.interview.EgoClient;
-import org.egonet.model.Interview;
-import org.egonet.model.Shared;
-import org.egonet.model.Study;
-import org.egonet.model.answer.*;
-import org.egonet.model.question.AlterPairQuestion;
-import org.egonet.model.question.AlterQuestion;
-import org.egonet.model.question.Question;
-import org.egonet.model.question.Selection;
+import org.egonet.model.v1.Interview;
+import org.egonet.model.v1.Shared;
+import org.egonet.model.v1.Study;
+import org.egonet.model.v1.answer.*;
+import org.egonet.model.v1.question.AlterPairQuestion;
+import org.egonet.model.v1.question.AlterQuestion;
+import org.egonet.model.v1.question.Question;
+import org.egonet.model.v1.question.Selection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
