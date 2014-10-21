@@ -3,8 +3,8 @@ package org.egonet.model.v2.interview.alter;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AlterPair extends AlterList implements Comparable<AlterPair> {
-	public AlterPair(Alter first, Alter second) {
+public class AlterPair2 extends AlterList2 implements Comparable<AlterPair2> {
+	public AlterPair2(Alter2 first, Alter2 second) {
 		super(2);
 		// ensure these come sorted correctly
 		if(first.compareTo(second) < 0) {
@@ -34,7 +34,7 @@ public class AlterPair extends AlterList implements Comparable<AlterPair> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AlterPair other = (AlterPair) obj;
+		AlterPair2 other = (AlterPair2) obj;
 		if (get(0) == null) {
 			if (other.get(0) != null)
 				return false;
@@ -54,16 +54,16 @@ public class AlterPair extends AlterList implements Comparable<AlterPair> {
 	}
 	
 	
-	public Set<Alter> getAlters() {
+	public Set<Alter2> getAlters() {
 		// separate unordered list (force that with set)
-		HashSet<Alter> r = new HashSet<Alter>();
+		HashSet<Alter2> r = new HashSet<Alter2>();
 		r.addAll(this);
 		
 		return r;
 	}
 
 	@Override
-	public int compareTo(AlterPair o) {
+	public int compareTo(AlterPair2 o) {
 		if(o.equals(this))
 			return 0;
 		

@@ -3,7 +3,7 @@ package org.egonet.model.v2.interview.alter;
 import java.util.Comparator;
 import java.util.UUID;
 
-public class Alter implements Comparable<Alter> {
+public class Alter2 implements Comparable<Alter2> {
 
 	/**
 	 * Using UUID instead of a String allows us to rename alters without losing
@@ -14,19 +14,19 @@ public class Alter implements Comparable<Alter> {
 	private String name;
 	private final UUID _id;
 
-	public Alter(String name) {
+	public Alter2(String name) {
 		super();
 		this.name = name;
 		_id = UUID.randomUUID();
 	}
 	
-	public Alter(String name, UUID id) {
+	public Alter2(String name, UUID id) {
 		super();
 		this.name = name;
 		_id = id;
 	}
 	
-	public Alter(String name, String id) {
+	public Alter2(String name, String id) {
 		super();
 		this.name = name;
 		_id = UUID.fromString(id);
@@ -48,7 +48,7 @@ public class Alter implements Comparable<Alter> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Alter other = (Alter) obj;
+		Alter2 other = (Alter2) obj;
 		
 		return _id.equals(other._id);
 	}
@@ -59,17 +59,17 @@ public class Alter implements Comparable<Alter> {
 	}
 
 	@Override
-	public int compareTo(Alter arg0) {
+	public int compareTo(Alter2 arg0) {
 		UUID first = this._id;
 		UUID second = arg0._id;
 		
 		return first.compareTo(second);
 	}
 	
-	public class AlterNameComparator implements Comparator<Alter> {
+	public class AlterNameComparator implements Comparator<Alter2> {
 
 		@Override
-		public int compare(Alter arg0, Alter arg1) {
+		public int compare(Alter2 arg0, Alter2 arg1) {
 			String first = arg0.name;
 			String second = arg1.name;
 			
