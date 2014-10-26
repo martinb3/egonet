@@ -117,7 +117,7 @@ public class StudyWriter {
 
 				if (it.hasNext())
 				{
-					study.addElement(qorder).setAttribute("questiontype", type.getSimpleName());
+					study.addElement(qorder).setAttribute("questiontype", type.getCanonicalName());
 					while (it.hasNext())
 					{
 						qorder.addElement("id").setLong(((Long) it.next()).longValue());

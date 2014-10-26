@@ -2,6 +2,8 @@ package org.egonet.model.v2.util;
 
 import java.util.*;
 
+import org.egonet.model.v2.Alter2;
+
 /**
  * Integer values for a pair of alters. This class can be used to map any pair of alters to an integer.
  * @author Martin

@@ -25,6 +25,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -526,7 +527,13 @@ public class AuthoringQuestionPanel extends EgoQPanel
 
             /* Load questions from list into follows menu */
             question_follows_menu.removeAllItems();
-            question_follows_menu.addItem(egoNet.getStudy().getFirstQuestion());
+            try {
+            	question_follows_menu.addItem(egoNet.getStudy().getFirstQuestion());
+            } 
+            catch (NoSuchElementException ex) {
+            	// not any questions in our list yet, perhaps
+            	logger.error("Could not find a first question",ex);
+            }
             for (int i = 0; i < question_list.getModel().getSize(); i++)
             {
                 if (i != index)

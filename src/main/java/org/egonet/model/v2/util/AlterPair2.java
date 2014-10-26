@@ -3,6 +3,8 @@ package org.egonet.model.v2.util;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.egonet.model.v2.Alter2;
+
 public class AlterPair2 extends AlterList2 implements Comparable<AlterPair2> {
 	public AlterPair2(Alter2 first, Alter2 second) {
 		super(2);

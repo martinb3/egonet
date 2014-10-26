@@ -4,6 +4,8 @@ import sbtassembly.Plugin._
 
 name := "egonet"
 
+libraryDependencies += "com.google.code.gson" % "gson" % "2.3"
+
 libraryDependencies += "net.sf.jung" % "jung-api" % "2.0.1"
 
 libraryDependencies += "net.sf.jung" % "jung-graph-impl" % "2.0.1"

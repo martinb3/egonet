@@ -410,6 +410,10 @@ public class EgoFrame extends MDIChildFrame implements Observer, InternalFrameLi
 	public boolean closeStudyFile() throws IOException {
 		boolean exit = true;
 
+		if(egoNet == null || egoNet.getStudy() == null) {
+			throw new RuntimeException("Egonet or study are null data structures");
+		}
+		
 		if (egoNet.getStudy().isModified()) {
 			int confirm = JOptionPane
 					.showConfirmDialog(

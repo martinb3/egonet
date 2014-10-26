@@ -135,12 +135,12 @@ public class StudyReader {
 		while (elements.hasMoreElements()) {
 			Element element = elements.next();
 			String questionType = element.getAttribute("questiontype");
+			logger.info(questionType);
 			Class<? extends Question> qType = Question.asSubclass(questionType);
 			List<Long> questionOrder = study.getQuestionOrder(qType);
 	
 			Elements ids = element.getElements("id");
-			while (ids.hasMoreElements())
-			{
+			while (ids.hasMoreElements()) {
 				questionOrder.add(new Long(ids.next().getLong()));
 			}
 		}
@@ -241,7 +241,7 @@ public class StudyReader {
 		Question q;
 		
 		String questionType = question.getString("QuestionType");
-		if(!questionType.toLowerCase().contains(".class".toLowerCase())) {
+		if(!questionType.toLowerCase().contains("org.egonet.".toLowerCase())) {
 			int intQuestiontype = -1; 
 			try {
 				intQuestiontype = Integer.parseInt(questionType);
@@ -272,7 +272,7 @@ public class StudyReader {
 		q = Question.newInstance(questionType);	
 		
 		String answerType = question.getString("AnswerType");
-		if(!answerType.toLowerCase().contains(".class".toLowerCase())) {
+		if(!answerType.toLowerCase().contains("org.egonet.".toLowerCase())) {
 			int intAnswerType = -1; 
 			try {
 				intAnswerType = Integer.parseInt(answerType);

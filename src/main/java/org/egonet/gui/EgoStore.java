@@ -395,10 +395,10 @@ public class EgoStore {
 				Study study = sr.getStudy();
 				setCurrentStudy(file, study);
 			} catch (Exception ex) {
+				logger.error("Unable to read study file", ex);
 				JOptionPane.showMessageDialog(parent,
 						"Unable to read this study file",
 						"Study Reading Error", JOptionPane.ERROR_MESSAGE);
-
 				setCurrentStudy(null, null);
 			}
 		}
