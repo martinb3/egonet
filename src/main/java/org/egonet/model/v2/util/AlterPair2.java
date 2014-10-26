@@ -1,4 +1,4 @@
-package org.egonet.model.v2.interview.alter;
+package org.egonet.model.v2.util;
 
 import java.util.HashSet;
 import java.util.Set;
