@@ -3,6 +3,16 @@ package org.egonet.model.v2.util;
 import java.util.Comparator;
 import java.util.UUID;
 
+/**
+ * An object with a UUID that also may have a string/textual name
+ * 
+ *  Using UUIDs instead of basing everything by String allows a nice way to rename
+ *  objects and check equality and compare values without worrying about comparing 
+ *  Strings. The downside is a counter-intuitive sort order, but we expect implementations
+ *  to provide a comparator for this.
+ *  @see java.util.UUID
+ *  @see java.util.Comparator
+ */
 public abstract class UniqueWithName implements Comparable<UniqueWithName> {
 	/**
 	 * Using UUID instead of a String allows us to rename alters without losing

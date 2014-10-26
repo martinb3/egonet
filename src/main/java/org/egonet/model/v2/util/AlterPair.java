@@ -3,10 +3,14 @@ package org.egonet.model.v2.util;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.egonet.model.v2.Alter2;
+import org.egonet.model.v2.Alter;
 
-public class AlterPair2 extends AlterList2 implements Comparable<AlterPair2> {
-	public AlterPair2(Alter2 first, Alter2 second) {
+/**
+ * Two alters, respecting the natural order of Alter class 
+ * @see org.egonet.model.v2.Alter
+ */
+public class AlterPair extends AlterList implements Comparable<AlterPair> {
+	public AlterPair(Alter first, Alter second) {
 		super(2);
 		// ensure these come sorted correctly
 		if(first.compareTo(second) < 0) {
@@ -36,7 +40,7 @@ public class AlterPair2 extends AlterList2 implements Comparable<AlterPair2> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AlterPair2 other = (AlterPair2) obj;
+		AlterPair other = (AlterPair) obj;
 		if (get(0) == null) {
 			if (other.get(0) != null)
 				return false;
@@ -56,16 +60,16 @@ public class AlterPair2 extends AlterList2 implements Comparable<AlterPair2> {
 	}
 	
 	
-	public Set<Alter2> getAlters() {
+	public Set<Alter> getAlters() {
 		// separate unordered list (force that with set)
-		HashSet<Alter2> r = new HashSet<Alter2>();
+		HashSet<Alter> r = new HashSet<Alter>();
 		r.addAll(this);
 		
 		return r;
 	}
 
 	@Override
-	public int compareTo(AlterPair2 o) {
+	public int compareTo(AlterPair o) {
 		if(o.equals(this))
 			return 0;
 		
